@@ -1,5 +1,5 @@
 import 'package:carnet_prise/widgets/settings/theme_mode_selector.dart';
-import 'package:carnet_prise/widgets/settings/UsernameInput.dart';
+import 'package:carnet_prise/widgets/settings/username_input.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -32,14 +32,34 @@ class SettingsScreen extends StatelessWidget {
           child: ListView(
             scrollDirection: Axis.vertical,
             children: [
+              //
+              //  USERNAME
+              //
               Text("Nom utilisateur", style: titleTheme),
               SizedBox(height: 20),
               UsernameInput(),
               SizedBox(height: 20),
+
+              //
+              //  INTERFACE
+              //
               Text("Interface", style: titleTheme),
               SizedBox(height: 20),
               ThemeModeSelector(),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                child: Text(
+                  "Données",
+                  style: theme.textTheme.titleMedium!.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ),
               SizedBox(height: 20),
+
+              //
+              //  DATA
+              //
               Text("Données", style: titleTheme),
             ],
           ),

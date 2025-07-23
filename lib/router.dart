@@ -1,7 +1,7 @@
-import 'package:carnet_prise/pages/HomeScreen.dart';
-import 'package:carnet_prise/pages/StatisticsScreen.dart';
-import 'package:carnet_prise/pages/SettingsScreen.dart';
-import 'package:carnet_prise/widgets/navigation/BottomNavigation.dart';
+import 'package:carnet_prise/pages/home_page.dart';
+import 'package:carnet_prise/pages/statistics_page.dart';
+import 'package:carnet_prise/pages/settings_page.dart';
+import 'package:carnet_prise/widgets/navigation/bottom_navigation.dart';
 import 'package:go_router/go_router.dart';
 
 final router = GoRouter(
