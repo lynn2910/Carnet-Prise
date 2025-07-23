@@ -3,6 +3,8 @@ import 'package:carnet_prise/widgets/settings/username_input.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../widgets/settings/theme_color_selector.dart';
+
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
 
@@ -49,12 +51,13 @@ class SettingsScreen extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 10),
                 child: Text(
-                  "Données",
+                  "Couleur de l'interface",
                   style: theme.textTheme.titleMedium!.copyWith(
                     color: theme.colorScheme.onSurfaceVariant,
                   ),
                 ),
               ),
+              ThemeColorSelector(),
               SizedBox(height: 20),
 
               //

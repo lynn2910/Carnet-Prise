@@ -9,6 +9,21 @@ class ThemeManager extends ChangeNotifier {
 
   Color get seedColor => _seedColor;
 
+  List<Color> get allowedColors => [
+    Colors.deepPurple,
+    Colors.deepPurpleAccent,
+    Colors.blue,
+    Colors.lightBlue,
+    Colors.cyan,
+    Colors.green,
+    Colors.lightGreenAccent,
+    Colors.lime,
+    Colors.orange,
+    Colors.pinkAccent,
+    Colors.pink,
+    Colors.red,
+  ];
+
   ThemeManager() {
     _loadThemePreferences();
   }
