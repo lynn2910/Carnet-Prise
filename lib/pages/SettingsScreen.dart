@@ -1,3 +1,4 @@
+import 'package:carnet_prise/widgets/settings/theme_mode_selector.dart';
 import 'package:carnet_prise/widgets/settings/UsernameInput.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -34,6 +35,12 @@ class SettingsScreen extends StatelessWidget {
               Text("Nom utilisateur", style: titleTheme),
               SizedBox(height: 20),
               UsernameInput(),
+              SizedBox(height: 20),
+              Text("Interface", style: titleTheme),
+              SizedBox(height: 20),
+              ThemeModeSelector(),
+              SizedBox(height: 20),
+              Text("Données", style: titleTheme),
             ],
           ),
         ),
