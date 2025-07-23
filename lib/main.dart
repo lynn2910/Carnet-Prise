@@ -1,4 +1,5 @@
 import 'package:carnet_prise/router.dart';
+import 'package:carnet_prise/stores/isar_service.dart';
 import 'package:carnet_prise/stores/theme_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -7,9 +8,14 @@ import 'package:provider/provider.dart';
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
 
+  final isarService = IsarService();
+
   runApp(
-    ChangeNotifierProvider(
-      create: (context) => ThemeManager(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => ThemeManager()),
+        Provider<IsarService>(create: (context) => isarService),
+      ],
       child: const App(),
     ),
   );
