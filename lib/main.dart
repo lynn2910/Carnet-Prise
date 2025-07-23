@@ -1,8 +1,18 @@
 import 'package:carnet_prise/router.dart';
+import 'package:carnet_prise/stores/theme_manager.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
 void main() {
-  runApp(const App());
+  WidgetsFlutterBinding.ensureInitialized();
+
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => ThemeManager(),
+      child: const App(),
+    ),
+  );
 }
 
 class App extends StatelessWidget {
@@ -10,15 +20,31 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final themeManager = Provider.of<ThemeManager>(context);
+
+    SystemChrome.setSystemUIOverlayStyle(
+      SystemUiOverlayStyle(
+        statusBarColor: themeManager.themeMode == ThemeMode.dark
+            ? Colors.black
+            : Colors.white,
+        systemNavigationBarColor: themeManager.themeMode == ThemeMode.dark
+            ? Colors.black
+            : Colors.white,
+        systemNavigationBarIconBrightness:
+            themeManager.themeMode == ThemeMode.dark
+            ? Brightness.light
+            : Brightness.dark,
+      ),
+    );
+
     return MaterialApp.router(
       routerConfig: router,
       title: 'Carnet de Prise',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true
-      ),
-      locale: Locale("fr"),
+      theme: themeManager.lightTheme(),
+      darkTheme: themeManager.darkTheme(),
+      themeMode: themeManager.themeMode,
+      locale: const Locale("fr"),
     );
   }
 }
