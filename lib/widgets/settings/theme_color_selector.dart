@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:carnet_prise/stores/theme_manager.dart';
+
+import '../../repositories/theme_manager.dart';
 
 class ThemeColorSelector extends StatelessWidget {
   const ThemeColorSelector({super.key});

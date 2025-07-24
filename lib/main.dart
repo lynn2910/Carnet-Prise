@@ -1,6 +1,6 @@
 import 'package:carnet_prise/router.dart';
-import 'package:carnet_prise/stores/isar_service.dart';
-import 'package:carnet_prise/stores/theme_manager.dart';
+import 'package:carnet_prise/repositories/isar_service.dart';
+import 'package:carnet_prise/repositories/theme_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';

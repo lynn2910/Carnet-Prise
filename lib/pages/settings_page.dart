@@ -21,7 +21,7 @@ class SettingsScreen extends StatelessWidget {
         appBar: AppBar(
           toolbarHeight: 70,
           elevation: 1,
-          title: Text("Paramètres"),
+          title: const Text("Paramètres"),
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
             onPressed: () {
@@ -39,7 +39,7 @@ class SettingsScreen extends StatelessWidget {
               //
               Text("Nom utilisateur", style: titleTheme),
               SizedBox(height: 20),
-              UsernameInput(),
+              const UsernameInput(),
               SizedBox(height: 20),
 
               //
@@ -47,7 +47,7 @@ class SettingsScreen extends StatelessWidget {
               //
               Text("Interface", style: titleTheme),
               SizedBox(height: 20),
-              ThemeModeSelector(),
+              const ThemeModeSelector(),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 10),
                 child: Text(
@@ -57,7 +57,7 @@ class SettingsScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              ThemeColorSelector(),
+              const ThemeColorSelector(),
               SizedBox(height: 20),
 
               //
