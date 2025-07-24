@@ -1,4 +1,6 @@
-import 'package:carnet_prise/models/session_entry.dart';
+import 'package:carnet_prise/models/catch.dart';
+import 'package:carnet_prise/models/fisherman.dart';
+import 'package:carnet_prise/models/session.dart';
 import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -16,7 +18,7 @@ class IsarService {
 
     final dir = await getApplicationDocumentsDirectory();
     final isar = await Isar.open(
-      [SessionEntrySchema],
+      [SessionSchema, FishermanSchema, CatchSchema],
       directory: dir.path,
       inspector: true,
     );
