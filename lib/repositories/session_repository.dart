@@ -30,7 +30,7 @@ class SessionRepository {
 
   Future<List<Session>> getAllSessions() async {
     final isar = await _isarService.db;
-    return await isar.sessions.where().findAll();
+    return await isar.sessions.where().sortByEndDateDesc().findAll();
   }
 
   //

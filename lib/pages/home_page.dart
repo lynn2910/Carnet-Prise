@@ -14,7 +14,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  late SessionRepository _sessionRepository;
+  SessionRepository? _sessionRepository;
   List<Session> _sessions = [];
   String _username = "";
 
@@ -22,12 +22,22 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     _loadUsername();
-    _loadSessions();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_sessionRepository == null) {
+      _sessionRepository = Provider.of<SessionRepository>(context);
+      _loadSessions();
+    }
   }
 
   Future<void> _loadUsername() async {
     final prefs = await SharedPreferences.getInstance();
     final savedUsername = prefs.getString("username");
+    if (!mounted) return;
+
     if (savedUsername != null && savedUsername.isNotEmpty) {
       setState(() {
         _username = savedUsername;
@@ -36,7 +46,15 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _loadSessions() async {
-    final sessions = await _sessionRepository.getAllSessions();
+    if (_sessionRepository == null) return;
+
+    final sessions = await _sessionRepository!.getAllSessions();
+    if (!mounted) return;
+
+    sessions.sort((a, b) {
+      return b.id.compareTo(a.id);
+    });
+
     setState(() {
       _sessions = sessions;
     });
@@ -45,40 +63,70 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Title
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 50),
-              child: Center(
-                child: Text(
-                  "Bonjour, $_username !",
-                  style: const TextStyle(
-                    fontSize: 34,
-                    fontWeight: FontWeight.bold,
+      body: RefreshIndicator(
+        onRefresh: _loadSessions,
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              minHeight:
+                  MediaQuery.of(context).size.height -
+                  MediaQuery.of(context).padding.top -
+                  kToolbarHeight,
+            ),
+            child: SafeArea(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Title
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 50),
+                    child: Center(
+                      child: Text(
+                        "Bonjour, $_username !",
+                        style: const TextStyle(
+                          fontSize: 34,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
                   ),
-                  textAlign: TextAlign.center,
-                ),
+                  // Number of sessions indicator
+                  Padding(
+                    padding: const EdgeInsets.only(left: 20.0, bottom: 20.0),
+                    child: Text(
+                      "Vous avez ${_sessions.length} sessions",
+                      style: const TextStyle(fontSize: 16),
+                    ),
+                  ),
+                  // Sessions
+                  _sessions.isEmpty
+                      ? const Center(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(vertical: 50.0),
+                            child: Text(
+                              "Aucune session enregistrée.\nAppuyez sur '+' pour en créer une.",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.white70,
+                              ),
+                            ),
+                          ),
+                        )
+                      : SessionList(sessions: _sessions),
+                ],
               ),
             ),
-            // Number of sessions
-            Padding(
-              padding: const EdgeInsets.only(left: 20.0, bottom: 20.0),
-              child: Text(
-                "Vous avez ${_sessions.length} sessions",
-                style: const TextStyle(fontSize: 16),
-              ),
-            ),
-            // Sessions
-            Expanded(child: SessionList(sessions: _sessions)),
-          ],
+          ),
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          context.pushNamed("create_session");
+        onPressed: () async {
+          await context.pushNamed("create_session");
+          if (!mounted) return;
+          _loadSessions();
         },
         child: const Icon(Icons.add),
       ),
