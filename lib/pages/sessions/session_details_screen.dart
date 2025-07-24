@@ -2,8 +2,6 @@ import 'package:carnet_prise/models/session.dart';
 import 'package:carnet_prise/repositories/session_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:intl/intl.dart';
-import 'package:go_router/go_router.dart';
 
 class SessionDetailsScreen extends StatefulWidget {
   final int sessionId;
@@ -85,14 +83,14 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen> {
                   Text(
                     'Session n°${_session!.id}',
                     style: const TextStyle(
-                      fontSize: 30,
-                      fontWeight: FontWeight.w500,
+                      fontSize: 36,
+                      fontWeight: FontWeight.w400,
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     _session!.spotName ?? "Lieu inconnu",
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                   ),
                 ],
               ),
@@ -101,6 +99,10 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen> {
         ),
       ),
       body: Placeholder(),
+      floatingActionButton: FloatingActionButton(
+        child: const Icon(Icons.add),
+        onPressed: () {},
+      ),
     );
   }
 }
