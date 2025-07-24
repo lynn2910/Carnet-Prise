@@ -3,6 +3,7 @@ import 'package:carnet_prise/repositories/session_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
+import 'package:go_router/go_router.dart';
 
 class SessionDetailsScreen extends StatefulWidget {
   final int sessionId;
@@ -26,6 +27,7 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen> {
 
   Future<void> _loadSessionDetails() async {
     final session = await _sessionRepository.getSessionById(widget.sessionId);
+    if (!mounted) return;
     setState(() {
       _session = session;
     });
@@ -33,48 +35,72 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (_session == null) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Chargement...')),
+        body: const Center(child: CircularProgressIndicator()),
+      );
+    }
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Détails de la session')),
-      body: _session == null
-          ? const Center(child: CircularProgressIndicator())
-          : Padding(
-              padding: const EdgeInsets.all(20.0),
+      appBar: AppBar(
+        automaticallyImplyLeading: true,
+        title: null,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.analytics_outlined),
+            onPressed: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Afficher les statistiques')),
+              );
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.edit),
+            onPressed: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Éditer la session')),
+              );
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.share),
+            onPressed: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Partager la session')),
+              );
+            },
+          ),
+        ],
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(100.0),
+          child: Align(
+            alignment: Alignment.bottomLeft,
+            child: Padding(
+              padding: const EdgeInsets.only(left: 16.0, bottom: 16.0),
               child: Column(
+                mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Lieu de pêche: ${_session!.spotName ?? 'Non spécifié'}',
+                    'Session n°${_session!.id}',
                     style: const TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
+                      fontSize: 30,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 4),
                   Text(
-                    'Date de début: ${DateFormat('dd/MM/yyyy').format(_session!.startDate!)}',
-                    style: const TextStyle(fontSize: 18),
+                    _session!.spotName ?? "Lieu inconnu",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
                   ),
-                  const SizedBox(height: 10),
-                  Text(
-                    'Date de fin: ${DateFormat('dd/MM/yyyy').format(_session!.endDate!)}',
-                    style: const TextStyle(fontSize: 18),
-                  ),
-                  const SizedBox(height: 20),
-                  const Text(
-                    'Pêcheurs participants:',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  _session!.fishermen.isEmpty
-                      ? const Text('Aucun pêcheur associé à cette session.')
-                      : Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: _session!.fishermen
-                              .map((f) => Text('- ${f.name}'))
-                              .toList(),
-                        ),
                 ],
               ),
             ),
+          ),
+        ),
+      ),
+      body: Placeholder(),
     );
   }
 }
