@@ -1,3 +1,4 @@
+import 'package:carnet_prise/repositories/session_repository.dart';
 import 'package:carnet_prise/router.dart';
 import 'package:carnet_prise/repositories/isar_service.dart';
 import 'package:carnet_prise/repositories/theme_manager.dart';
@@ -15,6 +16,9 @@ void main() {
       providers: [
         ChangeNotifierProvider(create: (context) => ThemeManager()),
         Provider<IsarService>(create: (context) => isarService),
+        Provider<SessionRepository>(
+          create: (context) => SessionRepository(context.read<IsarService>()),
+        ),
       ],
       child: const App(),
     ),
