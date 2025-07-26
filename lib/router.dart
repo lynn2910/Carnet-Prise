@@ -1,5 +1,10 @@
 import 'package:carnet_prise/pages/home_page.dart';
 import 'package:carnet_prise/pages/sessions/add_session_screen.dart';
+import 'package:carnet_prise/pages/sessions/catch/add_catch_screen.dart';
+import 'package:carnet_prise/pages/sessions/catch/edit_catch_screen.dart';
+import 'package:carnet_prise/pages/sessions/fisherman/add_fisherman_screen.dart';
+import 'package:carnet_prise/pages/sessions/fisherman/edit_fisherman_screen.dart';
+import 'package:carnet_prise/pages/sessions/fisherman/fisherman_details_screen.dart';
 import 'package:carnet_prise/pages/sessions/session_details_screen.dart';
 import 'package:carnet_prise/pages/statistics_page.dart';
 import 'package:carnet_prise/pages/settings_page.dart';
@@ -31,9 +36,77 @@ final router = GoRouter(
                 final sessionId = int.parse(state.pathParameters['id']!);
                 return SessionDetailsScreen(sessionId: sessionId);
               },
+              routes: [
+                // Add catch
+                GoRoute(
+                  path: "/session/:session_id/catch/add",
+                  name: "add_catch",
+                  builder: (context, state) => const AddCatchScreen(),
+                ),
+                // Edit catch
+                GoRoute(
+                  path: "/session/:session_id/catch/:catch_id/edit",
+                  name: "add_catch",
+                  builder: (context, state) {
+                    final catchId = int.parse(
+                      state.pathParameters['catch_id']!,
+                    );
+                    return EditCatchScreen(catchId: catchId);
+                  },
+                ),
+                // Add fisherman
+                GoRoute(
+                  path: "/session/:session_id/fisherman/add",
+                  name: "add_fisherman",
+                  builder: (context, state) => const AddFishermanScreen(),
+                ),
+                // Fisherman details
+                GoRoute(
+                  path: "/session/:session_id/fisherman/:fisherman_id",
+                  name: "fisherman_details",
+                  builder: (context, state) {
+                    final sessionId = int.parse(
+                      state.pathParameters['session_id']!,
+                    );
+                    final fishermanId = int.parse(
+                      state.pathParameters['fisherman_id']!,
+                    );
+                    return FishermanDetailsScreen(
+                      sessionId: sessionId,
+                      fishermanId: fishermanId,
+                    );
+                  },
+                  routes: [
+                    // Add catch
+                    GoRoute(
+                      path:
+                          "/session/:session_id/fisherman/:fisherman_id/catch/add",
+                      name: "add_catch",
+                      builder: (context, state) {
+                        final fishermanId = int.parse(
+                          state.pathParameters['fisherman_id']!,
+                        );
+                        return AddCatchScreen(selectedFisherman: fishermanId);
+                      },
+                    ),
+                    // Edit fisherman
+                    GoRoute(
+                      path: "/session/:session_id/fisherman/:fisherman_id/edit",
+                      name: "edit_fisherman",
+                      builder: (context, state) {
+                        final fishermanId = int.parse(
+                          state.pathParameters['fisherman_id']!,
+                        );
+                        return EditFishermanScreen(fishermanId: fishermanId);
+                      },
+                    ),
+                  ],
+                ),
+              ],
             ),
           ],
         ),
+        // TODO implémenter le système de statistiques
         GoRoute(
           path: '/statistics',
           name: "statistics",
