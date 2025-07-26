@@ -10,7 +10,6 @@ class AddFishermanScreen extends StatefulWidget {
 class _AddFishermanScreenState extends State<AddFishermanScreen> {
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
-    throw UnimplementedError();
+    return Center(child: Text("Add fisherman screen"));
   }
 }

@@ -12,7 +12,6 @@ class EditCatchScreen extends StatefulWidget {
 class _EditCatchScreenState extends State<EditCatchScreen> {
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
-    throw UnimplementedError();
+    return Center(child: Text("Edit catch screen"));
   }
 }

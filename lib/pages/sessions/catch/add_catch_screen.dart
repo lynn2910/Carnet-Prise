@@ -12,7 +12,6 @@ class AddCatchScreen extends StatefulWidget {
 class _AddCatchScreenState extends State<AddCatchScreen> {
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
-    throw UnimplementedError();
+    return Center(child: Text("Add catch screen"));
   }
 }

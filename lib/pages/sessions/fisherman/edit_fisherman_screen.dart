@@ -12,7 +12,6 @@ class EditFishermanScreen extends StatefulWidget {
 class _EditFishermanScreenState extends State<EditFishermanScreen> {
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
-    throw UnimplementedError();
+    return Center(child: Text("Edit fisherman screen"));
   }
 }
