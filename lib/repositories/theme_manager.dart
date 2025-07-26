@@ -75,6 +75,8 @@ class ThemeManager extends ChangeNotifier {
     final seedColorValue =
         prefs.getInt("seedColor") ?? Colors.deepPurple.toARGB32();
     _seedColor = Color(seedColorValue);
+
+    notifyListeners();
   }
 
   Future<void> _saveThemePreferences() async {
