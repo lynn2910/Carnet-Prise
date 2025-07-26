@@ -11,18 +11,26 @@ class Catch {
 
   @Enumerated(EnumType.name)
   FishType? fishType;
+  @Enumerated(EnumType.name)
+  Accident? accident;
 
   String? otherFishType;
 
   double? weight;
-
-  bool? isLineLost;
 
   final author = IsarLink<Fisherman>();
 
   DateTime? catchDate;
 
   final session = IsarLink<Session>();
+}
+
+enum Accident {
+  /// Décrochage
+  snaggedLine,
+
+  /// Cassage de la ligne
+  lineBreak,
 }
 
 enum FishType { commonCarp, mirrorCarp, grassCarp, other }

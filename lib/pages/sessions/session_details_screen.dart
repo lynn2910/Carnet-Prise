@@ -1,5 +1,6 @@
 import 'package:carnet_prise/models/session.dart';
-import 'package:carnet_prise/repositories/session_repository.dart';
+import 'package:carnet_prise/repositories/isar/session_repository.dart';
+import 'package:carnet_prise/widgets/sessions/fisherman_list.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -39,6 +40,8 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen> {
         body: const Center(child: CircularProgressIndicator()),
       );
     }
+
+    var theme = Theme.of(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -98,7 +101,65 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen> {
           ),
         ),
       ),
-      body: Placeholder(),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 18),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              //
+              //  Fisherman list
+              //
+              //
+              // Fisherman Title
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "Participants",
+                    style: theme.textTheme.titleLarge!.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      // TODO Add fisherman
+                    },
+                    icon: Icon(Icons.add),
+                  ),
+                ],
+              ),
+              // Fisherman list
+              if (_session?.fishermen != null)
+                FishermanList(fishermen: _session!.fishermen.toList()),
+
+              //
+              //  Catch list
+              //
+              //
+              // Catch Title
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "Historique des prises",
+                    style: theme.textTheme.titleLarge!.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  // TODO add calculated fish weight
+                  Text(
+                    "0 Kg",
+                    style: theme.textTheme.titleSmall!.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
         onPressed: () {},

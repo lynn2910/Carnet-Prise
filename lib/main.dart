@@ -1,4 +1,4 @@
-import 'package:carnet_prise/repositories/session_repository.dart';
+import 'package:carnet_prise/repositories/isar/session_repository.dart';
 import 'package:carnet_prise/router.dart';
 import 'package:carnet_prise/repositories/isar_service.dart';
 import 'package:carnet_prise/repositories/theme_manager.dart';

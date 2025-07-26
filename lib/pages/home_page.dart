@@ -1,5 +1,5 @@
 import 'package:carnet_prise/models/session.dart';
-import 'package:carnet_prise/repositories/session_repository.dart';
+import 'package:carnet_prise/repositories/isar/session_repository.dart';
 import 'package:carnet_prise/widgets/sessions/session_list.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
