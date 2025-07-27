@@ -44,7 +44,12 @@ final router = GoRouter(
                 GoRoute(
                   path: "/catch/add",
                   name: "add_catch",
-                  builder: (context, state) => const AddCatchScreen(),
+                  builder: (context, state) {
+                    final sessionId = int.parse(
+                      state.pathParameters['session_id']!,
+                    );
+                    return AddCatchScreen(selectedSessionId: sessionId);
+                  },
                 ),
                 // Edit catch
                 GoRoute(
@@ -93,7 +98,13 @@ final router = GoRouter(
                         final fishermanId = int.parse(
                           state.pathParameters['fisherman_id']!,
                         );
-                        return AddCatchScreen(selectedFisherman: fishermanId);
+                        final sessionId = int.parse(
+                          state.pathParameters['session_id']!,
+                        );
+                        return AddCatchScreen(
+                          selectedFisherman: fishermanId,
+                          selectedSessionId: sessionId,
+                        );
                       },
                     ),
                     // Edit fisherman

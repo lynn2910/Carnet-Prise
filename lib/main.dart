@@ -1,3 +1,5 @@
+import 'package:carnet_prise/repositories/isar/catch_repository.dart';
+import 'package:carnet_prise/repositories/isar/fisherman_repository.dart';
 import 'package:carnet_prise/repositories/isar/session_repository.dart';
 import 'package:carnet_prise/router.dart';
 import 'package:carnet_prise/repositories/isar_service.dart';
@@ -18,6 +20,12 @@ void main() {
         Provider<IsarService>(create: (context) => isarService),
         Provider<SessionRepository>(
           create: (context) => SessionRepository(context.read<IsarService>()),
+        ),
+        Provider<CatchRepository>(
+          create: (context) => CatchRepository(context.read<IsarService>()),
+        ),
+        Provider<FishermanRepository>(
+          create: (context) => FishermanRepository(context.read<IsarService>()),
         ),
       ],
       child: const App(),

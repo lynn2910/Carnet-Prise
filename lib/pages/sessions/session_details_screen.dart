@@ -175,7 +175,12 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
-        onPressed: () {},
+        onPressed: () {
+          context.pushNamed(
+            "add_catch",
+            pathParameters: {"session_id": widget.sessionId.toString()},
+          );
+        },
       ),
     );
   }

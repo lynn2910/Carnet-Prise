@@ -31,11 +31,12 @@ enum Accident {
 
   /// Cassage de la ligne
   lineBreak,
+  none,
 }
 
 enum FishType { commonCarp, mirrorCarp, grassCarp, other }
 
-List<String> _getPredefinedFishTypes() {
+List<String> getPredefinedFishTypes() {
   return FishType.values.map((e) {
     switch (e) {
       case FishType.commonCarp:
@@ -64,7 +65,7 @@ Future<List<String>> _getCustomOtherFishTypes(Isar isar) async {
 }
 
 Future<List<String>> getAllAvailableFishTypes(Isar isar) async {
-  List<String> predefined = _getPredefinedFishTypes()
+  List<String> predefined = getPredefinedFishTypes()
       .where((s) => s.toLowerCase() != 'autre')
       .toList();
 
