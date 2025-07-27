@@ -2,6 +2,7 @@ import 'package:carnet_prise/models/session.dart';
 import 'package:carnet_prise/repositories/isar/session_repository.dart';
 import 'package:carnet_prise/widgets/sessions/fisherman_list.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 class SessionDetailsScreen extends StatefulWidget {
@@ -123,7 +124,16 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen> {
                   ),
                   IconButton(
                     onPressed: () {
-                      // TODO Add fisherman
+                      context
+                          .pushNamed(
+                            "add_fisherman",
+                            pathParameters: {
+                              "session_id": widget.sessionId.toString(),
+                            },
+                          )
+                          .then((_) {
+                            _loadSessionDetails();
+                          });
                     },
                     icon: Icon(Icons.add),
                   ),
@@ -131,7 +141,10 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen> {
               ),
               // Fisherman list
               if (_session?.fishermen != null)
-                FishermanList(fishermen: _session!.fishermen.toList()),
+                FishermanList(
+                  fishermen: _session!.fishermen.toList(),
+                  sessionId: widget.sessionId,
+                ),
 
               //
               //  Catch list
