@@ -94,19 +94,6 @@ class _AddCatchScreenState extends State<AddCatchScreen> {
     });
   }
 
-  String _getDisplayName(FishType type) {
-    switch (type) {
-      case FishType.commonCarp:
-        return 'Carpe commune';
-      case FishType.mirrorCarp:
-        return 'Carpe miroir';
-      case FishType.grassCarp:
-        return 'Carpe amour';
-      case FishType.other:
-        return 'Autre';
-    }
-  }
-
   FishType _getEnumType(String displayName) {
     switch (displayName) {
       case 'Carpe commune':

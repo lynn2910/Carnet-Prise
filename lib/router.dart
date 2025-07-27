@@ -9,7 +9,6 @@ import 'package:carnet_prise/pages/sessions/session_details_screen.dart';
 import 'package:carnet_prise/pages/statistics_page.dart';
 import 'package:carnet_prise/pages/settings_page.dart';
 import 'package:carnet_prise/widgets/navigation/bottom_navigation.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
 
 final router = GoRouter(
