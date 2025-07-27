@@ -124,10 +124,12 @@ class _AddSessionScreenState extends State<AddSessionScreen> {
 
   @override
   Widget build(BuildContext context) {
+    var theme = Theme.of(context);
+
     return Scaffold(
       appBar: AppBar(title: const Text('Création d\'une session')),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20.0),
+        padding: const EdgeInsets.symmetric(vertical: 30.0, horizontal: 50),
         child: Form(
           key: _formKey,
           child: Column(
@@ -222,7 +224,9 @@ class _AddSessionScreenState extends State<AddSessionScreen> {
                       horizontal: 40,
                       vertical: 15,
                     ),
-                    textStyle: const TextStyle(fontSize: 18),
+                    backgroundColor: theme.colorScheme.primary,
+                    foregroundColor: theme.colorScheme.onPrimary,
+                    textStyle: theme.textTheme.titleMedium,
                   ),
                 ),
               ),

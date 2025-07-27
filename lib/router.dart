@@ -31,22 +31,25 @@ final router = GoRouter(
               builder: (context, state) => const AddSessionScreen(),
             ),
             GoRoute(
-              path: "/session/:id",
+              path: "/session/:session_id",
+              name: "session_details",
               builder: (context, state) {
-                final sessionId = int.parse(state.pathParameters['id']!);
+                final sessionId = int.parse(
+                  state.pathParameters['session_id']!,
+                );
                 return SessionDetailsScreen(sessionId: sessionId);
               },
               routes: [
                 // Add catch
                 GoRoute(
-                  path: "/session/:session_id/catch/add",
+                  path: "/catch/add",
                   name: "add_catch",
                   builder: (context, state) => const AddCatchScreen(),
                 ),
                 // Edit catch
                 GoRoute(
-                  path: "/session/:session_id/catch/:catch_id/edit",
-                  name: "add_catch",
+                  path: "/catch/:catch_id/edit",
+                  name: "edit_catch",
                   builder: (context, state) {
                     final catchId = int.parse(
                       state.pathParameters['catch_id']!,
@@ -56,13 +59,18 @@ final router = GoRouter(
                 ),
                 // Add fisherman
                 GoRoute(
-                  path: "/session/:session_id/fisherman/add",
+                  path: "/fisherman/add",
                   name: "add_fisherman",
-                  builder: (context, state) => const AddFishermanScreen(),
+                  builder: (context, state) {
+                    final sessionId = int.parse(
+                      state.pathParameters['session_id']!,
+                    );
+                    return AddFishermanScreen(sessionId: sessionId);
+                  },
                 ),
                 // Fisherman details
                 GoRoute(
-                  path: "/session/:session_id/fisherman/:fisherman_id",
+                  path: "/fisherman/:fisherman_id",
                   name: "fisherman_details",
                   builder: (context, state) {
                     final sessionId = int.parse(
@@ -79,9 +87,8 @@ final router = GoRouter(
                   routes: [
                     // Add catch
                     GoRoute(
-                      path:
-                          "/session/:session_id/fisherman/:fisherman_id/catch/add",
-                      name: "add_catch",
+                      path: "/catch/add",
+                      name: "add_catch_from_fisherman",
                       builder: (context, state) {
                         final fishermanId = int.parse(
                           state.pathParameters['fisherman_id']!,
@@ -91,7 +98,7 @@ final router = GoRouter(
                     ),
                     // Edit fisherman
                     GoRoute(
-                      path: "/session/:session_id/fisherman/:fisherman_id/edit",
+                      path: "/edit",
                       name: "edit_fisherman",
                       builder: (context, state) {
                         final fishermanId = int.parse(

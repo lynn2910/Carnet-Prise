@@ -71,20 +71,22 @@ class SessionRepository {
   //
 
   /// Add or create a new fisherman to the given session
-  Future<void> addFishermanToSession(int sessionId, Fisherman fisherman) async {
+  Future<int?> addFishermanToSession(int sessionId, Fisherman fisherman) async {
     final isar = await _isarService.db;
-    await isar.writeTxn(() async {
+    return await isar.writeTxn(() async {
       final session = await isar.sessions.get(sessionId);
       if (session != null) {
         final existingFisherman = await isar.fishermans.get(fisherman.id);
         if (existingFisherman != null) {
           session.fishermen.add(existingFisherman);
           await session.fishermen.save();
+          return existingFisherman.id;
         } else {
           final fishermanId = await isar.fishermans.put(fisherman);
           fisherman.id = fishermanId;
           session.fishermen.add(fisherman);
           await session.fishermen.save();
+          return fishermanId;
         }
       }
     });
