@@ -58,7 +58,7 @@ class _SessionListState extends State<SessionList> {
                       ),
                       child: Center(
                         child: Text(
-                          (index + 1).toString(),
+                          session.id.toString(),
                           style: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
