@@ -5,17 +5,11 @@ import 'catch.dart';
 
 part "fisherman.g.dart";
 
-@collection
+@embedded
 class Fisherman {
-  Id id = Isar.autoIncrement;
-
-  @Index(unique: false, replace: false, type: IndexType.value)
   String? name;
-
   String? spotNumber;
 
-  @Backlink(to: 'fishermen')
-  final sessions = IsarLinks<Session>();
-
-  final catches = IsarLinks<Catch>();
+  @ignore
+  List<Catch> catches = [];
 }

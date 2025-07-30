@@ -1,5 +1,7 @@
+import 'package:carnet_prise/models/catch.dart';
 import 'package:carnet_prise/models/fisherman.dart';
 import 'package:carnet_prise/models/session.dart';
+import 'package:carnet_prise/pages/sessions/catch/add_catch_screen.dart';
 import 'package:carnet_prise/repositories/isar_service.dart';
 import 'package:isar/isar.dart';
 
@@ -25,7 +27,33 @@ class SessionRepository {
 
   Future<Session?> getSessionById(int id) async {
     final isar = await _isarService.db;
-    return await isar.sessions.get(id);
+    final session = await isar.sessions.get(id);
+
+    if (session == null) return null;
+
+    final catches = await isar.catchs
+        .filter()
+        .session((q) => q.idEqualTo(id))
+        .findAll();
+
+    Map<String, Fisherman> fishermen = {};
+    for (var fisherman in session.fishermen) {
+      if (fisherman.name == null) continue;
+
+      fisherman.catches = fisherman.catches.toList(growable: true);
+      fishermen[cleanString(fisherman.name!)] = fisherman;
+    }
+
+    for (var singleCatch in catches) {
+      if (singleCatch.fishermenName == null) continue;
+
+      final fishermanName = cleanString(singleCatch.fishermenName!);
+      if (fishermen[fishermanName] == null) continue;
+
+      fishermen[fishermanName]!.catches.add(singleCatch);
+    }
+
+    return session;
   }
 
   Future<List<Session>> getAllSessions() async {
@@ -71,23 +99,27 @@ class SessionRepository {
   //
 
   /// Add or create a new fisherman to the given session
-  Future<int?> addFishermanToSession(int sessionId, Fisherman fisherman) async {
+  Future<void> addOrUpdateFishermanToSession(
+    int sessionId,
+    Fisherman fisherman,
+  ) async {
     final isar = await _isarService.db;
-    return await isar.writeTxn(() async {
+    await isar.writeTxn(() async {
       final session = await isar.sessions.get(sessionId);
       if (session != null) {
-        final existingFisherman = await isar.fishermans.get(fisherman.id);
-        if (existingFisherman != null) {
-          session.fishermen.add(existingFisherman);
-          await session.fishermen.save();
-          return existingFisherman.id;
+        Fisherman? alreadyExists = session.fishermen.firstWhereOrNull(
+          (f) =>
+              cleanString(f.name ?? '0') == cleanString(fisherman.name ?? '1'),
+        );
+
+        if (alreadyExists != null) {
+          alreadyExists.spotNumber = fisherman.spotNumber;
         } else {
-          final fishermanId = await isar.fishermans.put(fisherman);
-          fisherman.id = fishermanId;
+          session.fishermen = session.fishermen.toList(growable: true);
           session.fishermen.add(fisherman);
-          await session.fishermen.save();
-          return fishermanId;
         }
+
+        await isar.sessions.put(session);
       }
     });
   }
@@ -97,15 +129,44 @@ class SessionRepository {
   /// If no fisherman is in the list, it'll be ignored
   Future<void> removeFishermanFromSession(
     int sessionId,
-    int fishermanId,
+    String fishermanName,
   ) async {
     final isar = await _isarService.db;
     await isar.writeTxn(() async {
       final session = await isar.sessions.get(sessionId);
       if (session != null) {
-        session.fishermen.removeWhere((f) => f.id == fishermanId);
-        await session.fishermen.save();
+        session.fishermen.removeWhere(
+          (f) =>
+              f.name != null &&
+              cleanString(f.name!) == cleanString(fishermanName),
+        );
+        await isar.sessions.put(session);
       }
     });
   }
+
+  Future<List<Catch>> getFishermanCatches(
+    int sessionId,
+    String fishermenName,
+  ) async {
+    final isar = await _isarService.db;
+
+    return await isar.catchs
+        .filter()
+        .fishermenNameEqualTo(fishermenName, caseSensitive: false)
+        .findAll();
+  }
+
+  Future<Fisherman?> getFishermanByName(int sessionId, String name) async {
+    final session = await getSessionById(sessionId);
+    if (session == null) return null;
+
+    return session.fishermen.firstWhereOrNull(
+      (f) => f.name != null && cleanString(f.name!) == cleanString(name),
+    );
+  }
+}
+
+String cleanString(String s) {
+  return s.toLowerCase().trim();
 }

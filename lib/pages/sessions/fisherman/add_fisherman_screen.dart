@@ -43,28 +43,18 @@ class _AddFishermanScreenState extends State<AddFishermanScreen> {
       }
 
       try {
-        final fishermanId = await _sessionRepository!.addFishermanToSession(
+        await _sessionRepository!.addOrUpdateFishermanToSession(
           widget.sessionId,
           newFisherman,
         );
 
         if (!mounted) return;
 
-        if (fishermanId == null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text(
-                'Une erreur est survenue. Veuillez relancer l\'application',
-              ),
-            ),
-          );
-        } else {
-          context.pop();
+        context.pop();
 
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Pêcheur enregistré avec succès !')),
-          );
-        }
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Pêcheur enregistré avec succès !')),
+        );
       } catch (e) {
         if (kDebugMode) {
           print(e);

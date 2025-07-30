@@ -15,22 +15,17 @@ class CatchRepository {
 
   Future<int> createCatch(
     int sessionId,
-    int fishermanId,
+    String fishermanName,
     Catch newCatch,
   ) async {
     final isar = await _isarService.db;
     return await isar.writeTxn(() async {
-      final fisherman = await isar.fishermans.get(fishermanId);
-      if (fisherman == null) {
-        throw Exception("Fisherman with ID $fishermanId not found");
-      }
-      newCatch.author.value = fisherman;
+      newCatch.fishermenName = fishermanName;
 
       final session = await isar.sessions.get(sessionId);
       newCatch.session.value = session;
 
       final catchId = await isar.catchs.put(newCatch);
-      await newCatch.author.save();
       await newCatch.session.save();
 
       return catchId;
@@ -66,7 +61,6 @@ class CatchRepository {
         return false;
       }
 
-      await updatedCatch.author.save();
       await updatedCatch.session.save();
 
       return await isar.catchs.put(updatedCatch) != 0;

@@ -94,14 +94,12 @@ final router = GoRouter(
                       path: "/catch/add",
                       name: "add_catch_from_fisherman",
                       builder: (context, state) {
-                        final fishermanId = int.parse(
-                          state.pathParameters['fisherman_id']!,
-                        );
                         final sessionId = int.parse(
                           state.pathParameters['session_id']!,
                         );
                         return AddCatchScreen(
-                          selectedFisherman: fishermanId,
+                          selectedFisherman:
+                              state.pathParameters['fisherman_id']!,
                           selectedSessionId: sessionId,
                         );
                       },

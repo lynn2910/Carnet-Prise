@@ -1,6 +1,5 @@
 import 'package:carnet_prise/models/fisherman.dart';
 import 'package:carnet_prise/repositories/isar/catch_repository.dart';
-import 'package:carnet_prise/repositories/isar/fisherman_repository.dart';
 import 'package:carnet_prise/repositories/isar/session_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -11,7 +10,7 @@ import '../../../models/catch.dart';
 import '../../../models/session.dart';
 
 class AddCatchScreen extends StatefulWidget {
-  final int? selectedFisherman;
+  final String? selectedFisherman;
   final int selectedSessionId;
 
   const AddCatchScreen({
@@ -28,7 +27,6 @@ class _AddCatchScreenState extends State<AddCatchScreen> {
   final _formKey = GlobalKey<FormState>();
 
   late CatchRepository _catchRepository;
-  late FishermanRepository _fishermanRepository;
   late SessionRepository _sessionRepository;
 
   Fisherman? _selectedFisherman;
@@ -47,10 +45,6 @@ class _AddCatchScreenState extends State<AddCatchScreen> {
     super.initState();
 
     _catchRepository = Provider.of<CatchRepository>(context, listen: false);
-    _fishermanRepository = Provider.of<FishermanRepository>(
-      context,
-      listen: false,
-    );
     _sessionRepository = Provider.of<SessionRepository>(context, listen: false);
 
     _loadAssociatedData().whenComplete(() {
@@ -61,7 +55,8 @@ class _AddCatchScreenState extends State<AddCatchScreen> {
 
   Future<void> _loadAssociatedData() async {
     if (widget.selectedFisherman != null) {
-      final fisherman = await _fishermanRepository.getFishermanById(
+      final fisherman = await _sessionRepository.getFishermanByName(
+        widget.selectedSessionId,
         widget.selectedFisherman!,
       );
       setState(() {
@@ -82,7 +77,9 @@ class _AddCatchScreenState extends State<AddCatchScreen> {
       _allFishermen = _currentSession!.fishermen.toList();
       if (widget.selectedFisherman != null) {
         _selectedFisherman = _allFishermen.firstWhereOrNull(
-          (f) => f.id == widget.selectedFisherman,
+          (f) =>
+              f.name?.toLowerCase().trim() ==
+              widget.selectedFisherman?.toLowerCase().trim(),
         );
       }
     });
@@ -194,7 +191,7 @@ class _AddCatchScreenState extends State<AddCatchScreen> {
       newCatch.accident = _selectedAccident;
 
       // Assigner les liens
-      newCatch.author.value = _selectedFisherman;
+      newCatch.fishermenName = _selectedFisherman!.name!;
       newCatch.session.value = _currentSession;
 
       // Logique pour le poids et le type de poisson si pas d'accident
@@ -218,7 +215,7 @@ class _AddCatchScreenState extends State<AddCatchScreen> {
       try {
         await _catchRepository.createCatch(
           _currentSession!.id,
-          _selectedFisherman!.id,
+          _selectedFisherman!.name ?? "",
           newCatch,
         );
 

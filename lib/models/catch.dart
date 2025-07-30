@@ -18,7 +18,7 @@ class Catch {
 
   double? weight;
 
-  final author = IsarLink<Fisherman>();
+  String? fishermenName;
 
   DateTime? catchDate;
 

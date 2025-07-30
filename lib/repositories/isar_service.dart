@@ -1,5 +1,4 @@
 import 'package:carnet_prise/models/catch.dart';
-import 'package:carnet_prise/models/fisherman.dart';
 import 'package:carnet_prise/models/session.dart';
 import 'package:flutter/foundation.dart';
 import 'package:isar/isar.dart';
@@ -19,7 +18,7 @@ class IsarService {
 
     final dir = await getApplicationDocumentsDirectory();
     final isar = await Isar.open(
-      [SessionSchema, FishermanSchema, CatchSchema],
+      [SessionSchema, CatchSchema],
       directory: dir.path,
       inspector: kDebugMode,
     );

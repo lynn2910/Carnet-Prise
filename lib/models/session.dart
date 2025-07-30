@@ -14,5 +14,5 @@ class Session {
   DateTime? startDate;
   DateTime? endDate;
 
-  final fishermen = IsarLinks<Fisherman>();
+  List<Fisherman> fishermen = <Fisherman>[];
 }

@@ -1,6 +1,9 @@
 import 'package:carnet_prise/models/fisherman.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+
+import '../../repositories/isar/session_repository.dart';
 
 class FishermanList extends StatefulWidget {
   final List<Fisherman> fishermen;
@@ -17,6 +20,14 @@ class FishermanList extends StatefulWidget {
 }
 
 class _FishermanListState extends State<FishermanList> {
+  SessionRepository? _sessionRepository;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _sessionRepository ??= Provider.of<SessionRepository>(context);
+  }
+
   double _getTotalWeight(Fisherman fisherman) {
     double totalWeight = 0.0;
     for (var catchItem in fisherman.catches) {
@@ -63,15 +74,12 @@ class _FishermanListState extends State<FishermanList> {
               "fisherman_details",
               pathParameters: {
                 "session_id": widget.sessionId.toString(),
-                "fisherman_id": fisherman.id.toString(),
+                "fisherman_id": cleanString(fisherman.name.toString()),
               },
             );
           },
           child: Padding(
-            padding: const EdgeInsets.symmetric(
-              vertical: 12.0,
-              horizontal: 16.0,
-            ),
+            padding: const EdgeInsets.symmetric(vertical: 12.0),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
