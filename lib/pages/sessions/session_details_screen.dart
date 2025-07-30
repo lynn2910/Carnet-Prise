@@ -45,18 +45,6 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen> {
 
     var theme = Theme.of(context);
 
-    var sortedCatches = _session!.fishermen
-        .map((f) => f.catches.toList())
-        .expand((e) => e)
-        .toList();
-
-    sortedCatches.sort((b, a) {
-      if (a.catchDate == null && b.catchDate == null) return 0;
-      if (a.catchDate == null) return 1;
-      if (b.catchDate == null) return -1;
-      return a.catchDate!.compareTo(b.catchDate!);
-    });
-
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: true,
@@ -162,7 +150,12 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen> {
               //  Catch list
               //
               //
-              CatchesList(catches: sortedCatches),
+              CatchesList(
+                catches: _session!.fishermen
+                    .map((f) => f.catches.toList())
+                    .expand((e) => e)
+                    .toList(),
+              ),
             ],
           ),
         ),
