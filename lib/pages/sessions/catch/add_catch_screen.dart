@@ -3,6 +3,7 @@ import 'package:carnet_prise/repositories/isar/catch_repository.dart';
 import 'package:carnet_prise/repositories/isar/fisherman_repository.dart';
 import 'package:carnet_prise/repositories/isar/session_repository.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
@@ -220,8 +221,9 @@ class _AddCatchScreenState extends State<AddCatchScreen> {
           _selectedFisherman!.id,
           newCatch,
         );
+
         if (mounted) {
-          Navigator.pop(context, true);
+          context.pop(true);
         }
       } catch (e) {
         if (mounted) {

@@ -1,5 +1,6 @@
 import 'package:carnet_prise/models/session.dart';
 import 'package:carnet_prise/repositories/isar/session_repository.dart';
+import 'package:carnet_prise/widgets/sessions/catches_list.dart';
 import 'package:carnet_prise/widgets/sessions/fisherman_list.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -150,24 +151,11 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen> {
               //  Catch list
               //
               //
-              // Catch Title
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    "Historique des prises",
-                    style: theme.textTheme.titleLarge!.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  // TODO add calculated fish weight
-                  Text(
-                    "0 Kg",
-                    style: theme.textTheme.titleSmall!.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
+              CatchesList(
+                catches: _session!.fishermen
+                    .map((f) => f.catches.toList())
+                    .expand((e) => e)
+                    .toList(),
               ),
             ],
           ),
