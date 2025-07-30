@@ -106,8 +106,7 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen> {
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 18),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          child: ListView(
             children: [
               //
               //  Fisherman list

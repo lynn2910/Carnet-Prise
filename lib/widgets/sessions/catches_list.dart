@@ -1,4 +1,5 @@
 import 'package:carnet_prise/models/catch.dart';
+import 'package:carnet_prise/widgets/catches/catch_item.dart';
 import 'package:flutter/material.dart';
 
 class CatchesList extends StatefulWidget {
@@ -33,7 +34,6 @@ class _CatchesListState extends State<CatchesList> {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            // TODO add calculated fish weight
             Text(
               "${totalWeight.toStringAsFixed(2)} Kg",
               style: theme.textTheme.titleSmall!.copyWith(
@@ -42,7 +42,27 @@ class _CatchesListState extends State<CatchesList> {
             ),
           ],
         ),
+        // Total count
         Text("${catches.length} prises"),
+
+        //
+        //    LIST
+        //
+        ListView.separated(
+          physics: const NeverScrollableScrollPhysics(),
+          shrinkWrap: true,
+          itemCount: catches.length,
+          separatorBuilder: (context, index) => Divider(
+            height: 1,
+            color: theme.colorScheme.outlineVariant,
+            indent: 16,
+            endIndent: 16,
+          ),
+          itemBuilder: (context, index) {
+            final catchItem = catches[index];
+            return CatchItem(catchItem: catchItem);
+          },
+        ),
       ],
     );
   }
