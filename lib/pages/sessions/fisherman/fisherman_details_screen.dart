@@ -8,7 +8,7 @@ class FishermanDetailsScreen extends StatefulWidget {
   });
 
   final int sessionId;
-  final int fishermanId;
+  final String fishermanId;
 
   @override
   State<FishermanDetailsScreen> createState() => _FishermanDetailsScreenState();

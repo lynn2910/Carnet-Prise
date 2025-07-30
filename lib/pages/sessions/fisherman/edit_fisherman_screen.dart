@@ -1,9 +1,14 @@
 import 'package:flutter/cupertino.dart';
 
 class EditFishermanScreen extends StatefulWidget {
-  final int fishermanId;
+  final int sessionId;
+  final String fishermanId;
 
-  const EditFishermanScreen({super.key, required this.fishermanId});
+  const EditFishermanScreen({
+    super.key,
+    required this.sessionId,
+    required this.fishermanId,
+  });
 
   @override
   State<EditFishermanScreen> createState() => _EditFishermanScreenState();

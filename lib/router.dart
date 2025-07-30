@@ -80,12 +80,9 @@ final router = GoRouter(
                     final sessionId = int.parse(
                       state.pathParameters['session_id']!,
                     );
-                    final fishermanId = int.parse(
-                      state.pathParameters['fisherman_id']!,
-                    );
                     return FishermanDetailsScreen(
                       sessionId: sessionId,
-                      fishermanId: fishermanId,
+                      fishermanId: state.pathParameters['fisherman_id']!,
                     );
                   },
                   routes: [
@@ -109,10 +106,13 @@ final router = GoRouter(
                       path: "/edit",
                       name: "edit_fisherman",
                       builder: (context, state) {
-                        final fishermanId = int.parse(
-                          state.pathParameters['fisherman_id']!,
+                        final sessionId = int.parse(
+                          state.pathParameters['session_id']!,
                         );
-                        return EditFishermanScreen(fishermanId: fishermanId);
+                        return EditFishermanScreen(
+                          sessionId: sessionId,
+                          fishermanId: state.pathParameters['fisherman_id']!,
+                        );
                       },
                     ),
                   ],
