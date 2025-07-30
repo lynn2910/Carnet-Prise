@@ -66,9 +66,9 @@ String _formatDatetime(DateTime date) {
 
 String _getWeight(Catch c) {
   switch (c.accident) {
-    case Accident.snaggedLine:
-      return "ligne cassée";
     case Accident.lineBreak:
+      return "ligne cassée";
+    case Accident.snaggedLine:
       return "décroché";
     case Accident.none:
     default:
@@ -86,6 +86,6 @@ String _getCatchType(Catch c) {
       return 'Carpe amour';
     case FishType.other:
     default:
-      return c.otherFishType ?? "-- Erreur --";
+      return c.otherFishType ?? "--";
   }
 }
