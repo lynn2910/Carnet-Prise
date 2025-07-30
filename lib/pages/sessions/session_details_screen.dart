@@ -108,6 +108,7 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 18),
           child: ListView(
             children: [
+              const SizedBox(height: 8.0),
               //
               //  Fisherman list
               //

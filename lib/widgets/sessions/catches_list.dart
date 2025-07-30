@@ -55,12 +55,7 @@ class _CatchesListState extends State<CatchesList> {
             ),
           );
           children.add(
-            Divider(
-              height: 1,
-              color: theme.colorScheme.outlineVariant,
-              indent: 16,
-              endIndent: 16,
-            ),
+            Divider(height: 1, color: theme.colorScheme.outlineVariant),
           );
         }
         lastDate = currentCatchDate;
@@ -74,12 +69,7 @@ class _CatchesListState extends State<CatchesList> {
             nextCatchDate == null ||
             isSameDay(currentCatchDate, nextCatchDate)) {
           children.add(
-            Divider(
-              height: 1,
-              color: theme.colorScheme.outlineVariant,
-              indent: 16,
-              endIndent: 16,
-            ),
+            Divider(height: 1, color: theme.colorScheme.outlineVariant),
           );
         }
       }
@@ -105,9 +95,16 @@ class _CatchesListState extends State<CatchesList> {
             ),
           ],
         ),
-        Text("${catches.length} prises"),
+        Text(
+          "${catches.length} prises",
+          style: theme.textTheme.titleMedium!.copyWith(
+            fontWeight: FontWeight.bold,
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
+        ),
         const SizedBox(height: 8.0),
         Column(children: children),
+        const SizedBox(height: 100),
       ],
     );
   }
