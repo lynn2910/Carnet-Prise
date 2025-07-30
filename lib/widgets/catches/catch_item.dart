@@ -1,5 +1,6 @@
 import 'package:carnet_prise/models/catch.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class CatchItem extends StatefulWidget {
   final Catch catchItem;
@@ -33,14 +34,19 @@ class _CatchItemState extends State<CatchItem> {
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [Text("Heure - "), Text(getCatchType(catchItem))],
+                children: [
+                  Text(
+                    "${catchItem.catchDate != null ? _formatDatetime(catchItem.catchDate!) : "-- ERREUR --"} - ${catchItem.fishermenName ?? "-- ERREUR --"}",
+                  ),
+                  Text(_getCatchType(catchItem)),
+                ],
               ),
             ),
             //
             // Right
             //
             const SizedBox(width: 8),
-            Text(getWeight(catchItem), style: theme.textTheme.labelMedium!),
+            Text(_getWeight(catchItem), style: theme.textTheme.labelMedium!),
             const SizedBox(width: 8),
             Icon(
               Icons.arrow_right,
@@ -54,7 +60,11 @@ class _CatchItemState extends State<CatchItem> {
   }
 }
 
-String getWeight(Catch c) {
+String _formatDatetime(DateTime date) {
+  return DateFormat(DateFormat.HOUR24_MINUTE).format(date);
+}
+
+String _getWeight(Catch c) {
   switch (c.accident) {
     case Accident.snaggedLine:
       return "ligne cassée";
@@ -66,7 +76,7 @@ String getWeight(Catch c) {
   }
 }
 
-String getCatchType(Catch c) {
+String _getCatchType(Catch c) {
   switch (c.fishType) {
     case FishType.commonCarp:
       return 'Carpe commune';
