@@ -3,6 +3,7 @@ import 'package:carnet_prise/repositories/isar/session_repository.dart';
 import 'package:carnet_prise/widgets/sessions/catches_list.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../../../models/session.dart';
@@ -169,6 +170,22 @@ class _FishermanDetailsScreenState extends State<FishermanDetailsScreen> {
                 )
               : Center(child: CircularProgressIndicator()),
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        child: const Icon(Icons.add),
+        onPressed: () {
+          context
+              .pushNamed(
+                "add_catch_from_fisherman",
+                pathParameters: {
+                  "session_id": widget.sessionId.toString(),
+                  "fisherman_id": widget.fishermanId.toString(),
+                },
+              )
+              .then((_) {
+                _loadData();
+              });
+        },
       ),
     );
   }

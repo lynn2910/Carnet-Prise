@@ -1,4 +1,5 @@
 import 'package:carnet_prise/models/catch.dart';
+import 'package:carnet_prise/widgets/catches/catch_details.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -20,7 +21,12 @@ class _CatchItemState extends State<CatchItem> {
 
     return InkWell(
       onTap: () {
-        // TODO show details of catch
+        showModalBottomSheet<void>(
+          context: context,
+          builder: (BuildContext context) {
+            return CatchDetails(catchItem: catchItem);
+          },
+        );
       },
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 12.0),
