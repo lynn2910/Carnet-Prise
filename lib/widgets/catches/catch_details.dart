@@ -6,6 +6,7 @@ import 'package:carnet_prise/widgets/catches/delete_catch_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:share_plus/share_plus.dart';
 
 class CatchDetails extends StatefulWidget {
   final Catch catchItem;
@@ -65,9 +66,16 @@ class _CatchDetailsState extends State<CatchDetails> {
     }
   }
 
-  void _editItem() {}
+  void _editItem() {
+    // TODO edit catch item
+  }
 
-  void _shareItem() {}
+  Future<void> _shareItem() async {
+    await _loadFishermen();
+    SharePlus.instance.share(
+      ShareParams(text: widget.catchItem.shareSingle(_fishermen?.spotNumber)),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -102,45 +110,44 @@ class _CatchDetailsState extends State<CatchDetails> {
             //
 
             // catch date
-            if (wasCatchSuccessful)
-              Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 8,
-                      horizontal: 4,
-                    ),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            "Date de prise",
-                            style: theme.textTheme.titleMedium!,
-                          ),
-                        ),
-
-                        Text(
-                          formatDate(catchItem.catchDate!),
-                          style: theme.textTheme.labelLarge!.copyWith(
-                            fontWeight: FontWeight.normal,
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        Text(
-                          formatHour(catchItem.catchDate!),
-                          style: theme.textTheme.labelLarge!.copyWith(
-                            fontWeight: FontWeight.normal,
-                          ),
-                        ),
-                      ],
-                    ),
+            Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 8,
+                    horizontal: 4,
                   ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          "Date de prise",
+                          style: theme.textTheme.titleMedium!,
+                        ),
+                      ),
 
-                  Divider(height: 1, color: theme.colorScheme.outlineVariant),
+                      Text(
+                        formatDate(catchItem.catchDate!),
+                        style: theme.textTheme.labelLarge!.copyWith(
+                          fontWeight: FontWeight.normal,
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Text(
+                        formatHour(catchItem.catchDate!),
+                        style: theme.textTheme.labelLarge!.copyWith(
+                          fontWeight: FontWeight.normal,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
 
-                  const SizedBox(height: 8),
-                ],
-              ),
+                Divider(height: 1, color: theme.colorScheme.outlineVariant),
+
+                const SizedBox(height: 8),
+              ],
+            ),
 
             // weight
             if (wasCatchSuccessful)

@@ -1,6 +1,8 @@
 import 'package:carnet_prise/models/session.dart';
+import 'package:intl/intl.dart';
 import 'package:isar/isar.dart';
 
+import '../widgets/catches/catch_item.dart';
 import 'fisherman.dart';
 
 part "catch.g.dart";
@@ -23,6 +25,54 @@ class Catch {
   DateTime? catchDate;
 
   final session = IsarLink<Session>();
+
+  String shareSingle(String? spotNumber) {
+    String text;
+    if (accident == Accident.none) {
+      text = "$fishermenName a pêché un(e) ";
+      text += getCatchType(this);
+      text += " de ";
+      text += weight.toString();
+      text += " Kg";
+    } else {
+      text = "$fishermenName ";
+      switch (accident) {
+        case Accident.lineBreak:
+          text += "a cassé sa ligne";
+        case Accident.snaggedLine:
+          text += "a eu une touche, qui a malheureusement décroché";
+        default:
+          throw UnimplementedError("You should have this value");
+      }
+    }
+    text += " le ";
+    text += DateFormat("dd/MM/y à HH:mm").format(catchDate!);
+    if (spotNumber != null) {
+      text += " au poste $spotNumber";
+    }
+    return text;
+  }
+
+  String shareSmall() {
+    String text = "($fishermenName) ";
+
+    if (accident == Accident.none) {
+      text += getCatchType(this);
+    } else {
+      switch (accident) {
+        case Accident.lineBreak:
+          text += "Ligne cassée";
+        case Accident.snaggedLine:
+          text += "Décroché";
+        default:
+          throw UnimplementedError("You should have this value");
+      }
+    }
+    text += ": ";
+    text += DateFormat("dd/MM/y à HH:mm").format(catchDate!);
+
+    return text;
+  }
 }
 
 enum Accident {
