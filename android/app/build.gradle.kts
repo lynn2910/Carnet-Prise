@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = "fr.chamallow.carnet_prise"
-    
+
     compileSdk = flutter.compileSdkVersion
     ndkVersion = "27.0.12077973"
 
@@ -33,8 +33,6 @@ android {
 
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig = signingConfigs.getByName("debug")
         }
     }
@@ -42,4 +40,9 @@ android {
 
 flutter {
     source = "../.."
+}
+
+
+dependencies {
+    implementation("com.google.android.material:material:1.12.0")
 }
