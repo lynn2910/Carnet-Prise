@@ -171,13 +171,13 @@ class _AddSessionScreenState extends State<AddSessionScreen> {
               TextFormField(
                 controller: _startDateController,
                 readOnly: true,
+                onTap: () {
+                  _selectDate(context, isStartDate: true);
+                },
                 decoration: InputDecoration(
                   labelText: 'Date de début',
                   border: const OutlineInputBorder(),
-                  suffixIcon: IconButton(
-                    icon: const Icon(Icons.calendar_today),
-                    onPressed: () => _selectDate(context, isStartDate: true),
-                  ),
+                  suffixIcon: const Icon(Icons.calendar_today),
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -192,13 +192,11 @@ class _AddSessionScreenState extends State<AddSessionScreen> {
               TextFormField(
                 controller: _endDateController,
                 readOnly: true,
+                onTap: () => _selectDate(context, isStartDate: false),
                 decoration: InputDecoration(
                   labelText: 'Date de fin',
                   border: const OutlineInputBorder(),
-                  suffixIcon: IconButton(
-                    icon: const Icon(Icons.calendar_today),
-                    onPressed: () => _selectDate(context, isStartDate: false),
-                  ),
+                  suffixIcon: const Icon(Icons.calendar_today),
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
