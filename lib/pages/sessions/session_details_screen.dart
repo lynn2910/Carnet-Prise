@@ -34,6 +34,27 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen> {
     });
   }
 
+  // TODO Aller aux stats
+  void _goToAnalytics() {
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Afficher les statistiques')));
+  }
+
+  void _editSession() {
+    context.pushNamed(
+      "edit_session",
+      pathParameters: {"session_id": widget.sessionId.toString()},
+    );
+  }
+
+  // TODO partager une session
+  void _shareSession() {
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Partager la session')));
+  }
+
   @override
   Widget build(BuildContext context) {
     if (_session == null) {
@@ -53,25 +74,19 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen> {
           IconButton(
             icon: const Icon(Icons.analytics_outlined),
             onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Afficher les statistiques')),
-              );
+              _goToAnalytics();
             },
           ),
           IconButton(
             icon: const Icon(Icons.edit),
             onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Éditer la session')),
-              );
+              _editSession();
             },
           ),
           IconButton(
             icon: const Icon(Icons.share),
             onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Partager la session')),
-              );
+              _shareSession();
             },
           ),
         ],

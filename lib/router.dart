@@ -2,6 +2,7 @@ import 'package:carnet_prise/pages/home_page.dart';
 import 'package:carnet_prise/pages/sessions/add_session_screen.dart';
 import 'package:carnet_prise/pages/sessions/catch/add_catch_screen.dart';
 import 'package:carnet_prise/pages/sessions/catch/edit_catch_screen.dart';
+import 'package:carnet_prise/pages/sessions/edit_session_screen.dart';
 import 'package:carnet_prise/pages/sessions/fisherman/add_fisherman_screen.dart';
 import 'package:carnet_prise/pages/sessions/fisherman/edit_fisherman_screen.dart';
 import 'package:carnet_prise/pages/sessions/fisherman/fisherman_details_screen.dart';
@@ -39,6 +40,17 @@ final router = GoRouter(
                 return SessionDetailsScreen(sessionId: sessionId);
               },
               routes: [
+                // Edit session
+                GoRoute(
+                  path: "/edit",
+                  name: "edit_session",
+                  builder: (context, state) {
+                    final sessionId = int.parse(
+                      state.pathParameters['session_id']!,
+                    );
+                    return EditSessionScreen(sessionId: sessionId);
+                  },
+                ),
                 // Add catch
                 GoRoute(
                   path: "/catch/add",
