@@ -5,7 +5,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:share_plus/share_plus.dart';
 
+import '../../../models/catch.dart';
 import '../../../models/session.dart';
 
 class FishermanDetailsScreen extends StatefulWidget {
@@ -56,6 +58,45 @@ class _FishermanDetailsScreenState extends State<FishermanDetailsScreen> {
     });
   }
 
+  void _share() {
+    if (_fisherman == null || _session == null) return;
+
+    int fishCaught = _fisherman!.catches
+        .where((c) => c.accident == Accident.none)
+        .length;
+
+    double totalWeight = _fisherman!.catches.fold(
+      0,
+      (p, c) => p += c.weight ?? 0.0,
+    );
+
+    String text = "";
+
+    text +=
+        "${_fisherman!.name} a pêché $fishCaught poisson${fishCaught > 1 ? 's' : ''}";
+    text += ", pour un total de ${totalWeight.toStringAsFixed(2)} Kg.";
+
+    text += "\n\n";
+
+    text += "Lieu: ${_session!.spotName}\n";
+    text += "Poste: ${_fisherman!.spotNumber}";
+
+    text += "\n\n";
+
+    text += "Historique des prises:\n";
+
+    int i = 0;
+    for (var catchItem in _fisherman!.catches) {
+      text += catchItem.shareSmall(showAuthor: false);
+      if (i < _fisherman!.catches.length - 1) {
+        text += "\n";
+      }
+      i++;
+    }
+
+    SharePlus.instance.share(ShareParams(text: text));
+  }
+
   void _onCatchDeleted() {
     _loadData();
   }
@@ -88,9 +129,7 @@ class _FishermanDetailsScreenState extends State<FishermanDetailsScreen> {
           IconButton(
             icon: const Icon(Icons.share),
             onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Partager la session')),
-              );
+              _share();
             },
           ),
         ],

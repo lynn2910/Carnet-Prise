@@ -53,6 +53,10 @@ class SessionRepository {
       fishermen[fishermanName]!.catches.add(singleCatch);
     }
 
+    for (var fisherman in fishermen.values) {
+      fisherman.catches.sort((a, b) => b.catchDate!.compareTo(a.catchDate!));
+    }
+
     return session;
   }
 

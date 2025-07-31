@@ -53,8 +53,14 @@ class Catch {
     return text;
   }
 
-  String shareSmall() {
-    String text = "($fishermenName) ";
+  String shareSmall({bool showAuthor = false}) {
+    String text = "";
+    if (showAuthor) {
+      text += "($fishermenName) ";
+    }
+
+    text += DateFormat("dd/MM/y HH:mm").format(catchDate!);
+    text += ": ";
 
     if (accident == Accident.none) {
       text += getCatchType(this);
@@ -68,8 +74,6 @@ class Catch {
           throw UnimplementedError("You should have this value");
       }
     }
-    text += ": ";
-    text += DateFormat("dd/MM/y à HH:mm").format(catchDate!);
 
     return text;
   }

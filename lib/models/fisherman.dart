@@ -1,4 +1,3 @@
-import 'package:carnet_prise/models/session.dart';
 import 'package:isar/isar.dart';
 
 import 'catch.dart';
