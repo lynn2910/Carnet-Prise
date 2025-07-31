@@ -22,9 +22,10 @@ class _CatchItemState extends State<CatchItem> {
     return InkWell(
       onTap: () {
         showModalBottomSheet<void>(
+          isScrollControlled: true,
           context: context,
           builder: (BuildContext context) {
-            return CatchDetails(catchItem: catchItem);
+            return Wrap(children: [CatchDetails(catchItem: catchItem)]);
           },
         );
       },
@@ -44,7 +45,7 @@ class _CatchItemState extends State<CatchItem> {
                   Text(
                     "${catchItem.catchDate != null ? _formatDatetime(catchItem.catchDate!) : "-- ERREUR --"} - ${catchItem.fishermenName ?? "-- ERREUR --"}",
                   ),
-                  Text(_getCatchType(catchItem)),
+                  Text(getCatchType(catchItem)),
                 ],
               ),
             ),
@@ -78,11 +79,11 @@ String _getWeight(Catch c) {
       return "décroché";
     case Accident.none:
     default:
-      return "${c.weight} Kg";
+      return "${c.weight?.toStringAsFixed(2)} Kg";
   }
 }
 
-String _getCatchType(Catch c) {
+String getCatchType(Catch c) {
   switch (c.fishType) {
     case FishType.commonCarp:
       return 'Carpe commune';

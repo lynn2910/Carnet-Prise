@@ -147,6 +147,7 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen> {
                   sessionId: widget.sessionId,
                 ),
 
+              const SizedBox(height: 10),
               //
               //  Catch list
               //
