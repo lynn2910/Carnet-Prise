@@ -55,11 +55,11 @@ class Catch {
 
   String shareSmall({bool showAuthor = false}) {
     String text = "";
-    if (showAuthor) {
-      text += "($fishermenName) ";
-    }
 
     text += DateFormat("dd/MM/y HH:mm").format(catchDate!);
+    if (showAuthor) {
+      text += " ($fishermenName)";
+    }
     text += ": ";
 
     if (accident == Accident.none) {

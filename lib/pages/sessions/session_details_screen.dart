@@ -5,6 +5,9 @@ import 'package:carnet_prise/widgets/sessions/fisherman_list.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:share_plus/share_plus.dart';
+
+import '../../models/catch.dart';
 
 class SessionDetailsScreen extends StatefulWidget {
   final int sessionId;
@@ -48,11 +51,57 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen> {
     );
   }
 
-  // TODO partager une session
   void _shareSession() {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('Partager la session')));
+    if (_session == null) return;
+
+    var catches = _session!.fishermen
+        .map((f) => f.catches.toList())
+        .expand((e) => e)
+        .toList();
+
+    catches.sort((a, b) {
+      if (a.catchDate == null && b.catchDate == null) return 0;
+      if (a.catchDate == null) return 1;
+      if (b.catchDate == null) return -1;
+      return b.catchDate!.compareTo(a.catchDate!);
+    });
+
+    double totalWeight = catches.fold(0, (p, c) => p += c.weight ?? 0.0);
+
+    String text = "";
+
+    text += "Session de pêche à: ${_session!.spotName}";
+    text += "\n\n";
+    text += "Poids total: ${totalWeight.toStringAsFixed(2)} Kg\n";
+    text += "Nombre de prises total: ${catches.length}";
+
+    text += "\n\n";
+    text += "Pêcheurs:\n";
+
+    for (var fishermen in _session!.fishermen) {
+      final caughtNumber = fishermen.catches.length;
+      final double totalWeight = fishermen.catches.fold(
+        0,
+        (p, c) => p += c.weight ?? 0.0,
+      );
+
+      text +=
+          "${fishermen.name} ($caughtNumber prises - ${totalWeight.toStringAsFixed(2)} Kg)\n";
+    }
+
+    text += "\n";
+    text += "Historique des prises:\n";
+
+    int i = 0;
+    for (var catchItem in catches) {
+      text += catchItem.shareSmall(showAuthor: true);
+      if (i < catches.length - 1) {
+        text += "\n";
+      }
+      i++;
+    }
+
+    SharePlus.instance.share(ShareParams(text: text));
   }
 
   void _onCatchDeleted() {
