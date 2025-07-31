@@ -2,14 +2,20 @@ import 'package:carnet_prise/models/catch.dart';
 import 'package:carnet_prise/models/fisherman.dart';
 import 'package:carnet_prise/repositories/isar/session_repository.dart';
 import 'package:carnet_prise/widgets/catches/catch_item.dart';
+import 'package:carnet_prise/widgets/catches/delete_catch_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class CatchDetails extends StatefulWidget {
   final Catch catchItem;
+  final VoidCallback onCatchDeleted;
 
-  const CatchDetails({super.key, required this.catchItem});
+  const CatchDetails({
+    super.key,
+    required this.catchItem,
+    required this.onCatchDeleted,
+  });
 
   @override
   State<CatchDetails> createState() => _CatchDetailsState();
@@ -41,7 +47,23 @@ class _CatchDetailsState extends State<CatchDetails> {
     }
   }
 
-  void _deleteItem() {}
+  void _deleteItem() async {
+    final bool? success = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return DeleteCatchDialog(catchItem: widget.catchItem);
+      },
+    );
+
+    if (mounted) {
+      Navigator.of(context).pop();
+
+      if (success == true) {
+        widget.onCatchDeleted();
+      }
+    }
+  }
 
   void _editItem() {}
 

@@ -5,8 +5,13 @@ import 'package:intl/intl.dart';
 
 class CatchItem extends StatefulWidget {
   final Catch catchItem;
+  final VoidCallback onCatchDeleted;
 
-  const CatchItem({super.key, required this.catchItem});
+  const CatchItem({
+    super.key,
+    required this.catchItem,
+    required this.onCatchDeleted,
+  });
 
   @override
   State<CatchItem> createState() => _CatchItemState();
@@ -20,12 +25,19 @@ class _CatchItemState extends State<CatchItem> {
     var theme = Theme.of(context);
 
     return InkWell(
-      onTap: () {
-        showModalBottomSheet<void>(
+      onTap: () async {
+        final bool? success = await showModalBottomSheet<bool>(
           isScrollControlled: true,
           context: context,
           builder: (BuildContext context) {
-            return Wrap(children: [CatchDetails(catchItem: catchItem)]);
+            return Wrap(
+              children: [
+                CatchDetails(
+                  catchItem: catchItem,
+                  onCatchDeleted: widget.onCatchDeleted,
+                ),
+              ],
+            );
           },
         );
       },

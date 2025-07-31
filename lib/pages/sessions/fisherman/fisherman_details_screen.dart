@@ -56,6 +56,10 @@ class _FishermanDetailsScreenState extends State<FishermanDetailsScreen> {
     });
   }
 
+  void _onCatchDeleted() {
+    _loadData();
+  }
+
   @override
   Widget build(BuildContext context) {
     var theme = Theme.of(context);
@@ -165,7 +169,10 @@ class _FishermanDetailsScreenState extends State<FishermanDetailsScreen> {
                     //
                     //  Catches list
                     //
-                    CatchesList(catches: _fisherman?.catches ?? []),
+                    CatchesList(
+                      catches: _fisherman?.catches ?? [],
+                      onCatchDeleted: _onCatchDeleted,
+                    ),
                   ],
                 )
               : Center(child: CircularProgressIndicator()),

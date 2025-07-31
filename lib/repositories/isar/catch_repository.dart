@@ -71,6 +71,13 @@ class CatchRepository {
   // DELETE
   //
 
+  Future<bool> deleteCatch(int catchId) async {
+    final isar = await _isarService.db;
+    return await isar.writeTxn(() async {
+      return await isar.catchs.delete(catchId);
+    });
+  }
+
   Future<void> deleteAllCatches() async {
     final isar = await _isarService.db;
     return await isar.writeTxn(() async {

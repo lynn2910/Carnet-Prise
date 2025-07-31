@@ -55,6 +55,10 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen> {
     ).showSnackBar(const SnackBar(content: Text('Partager la session')));
   }
 
+  void _onCatchDeleted() {
+    _loadSessionDetails();
+  }
+
   @override
   Widget build(BuildContext context) {
     if (_session == null) {
@@ -172,6 +176,7 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen> {
                     .map((f) => f.catches.toList())
                     .expand((e) => e)
                     .toList(),
+                onCatchDeleted: _onCatchDeleted,
               ),
             ],
           ),
