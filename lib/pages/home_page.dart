@@ -83,7 +83,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     padding: const EdgeInsets.symmetric(vertical: 50),
                     child: Center(
                       child: Text(
-                        "Bonjour, $_username !",
+                        _username.isNotEmpty
+                            ? "Bonjour, $_username !"
+                            : "Bonjour !",
                         style: const TextStyle(
                           fontSize: 34,
                           fontWeight: FontWeight.bold,

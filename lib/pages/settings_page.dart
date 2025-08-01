@@ -48,7 +48,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
 
     if (acceptedToDelete ?? false) {
-      cleanDatabase(_isarService!);
+      cleanDatabase(_isarService!, resetPreferences: true);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: const Text("Les données ont été supprimées.")),

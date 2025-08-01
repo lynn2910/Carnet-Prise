@@ -8,6 +8,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class IsarService {
   late Future<Isar> db;
@@ -117,11 +118,19 @@ Future<void> importData({required bool replaceExisting}) async {
   });
 }
 
-Future<void> cleanDatabase(IsarService isarService) async {
+Future<void> cleanDatabase(
+  IsarService isarService, {
+  bool? resetPreferences = false,
+}) async {
   final isar = await isarService.db;
 
   await isar.writeTxn(() async {
     await isar.catchs.clear();
     await isar.sessions.clear();
   });
+
+  if (resetPreferences ?? false) {
+    final instance = await SharedPreferences.getInstance();
+    instance.clear();
+  }
 }
