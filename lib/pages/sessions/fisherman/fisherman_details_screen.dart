@@ -285,49 +285,52 @@ class _FishermanDetailsScreenState extends State<FishermanDetailsScreen> {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 18),
           child: _loaded
-              ? ListView(
-                  children: [
-                    //
-                    // Spot number
-                    //
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 12.0,
-                        horizontal: 8.0,
-                      ),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Expanded(
-                            child: Text(
-                              "Poste",
+              ? RefreshIndicator(
+                  onRefresh: () => _loadData(),
+                  child: ListView(
+                    children: [
+                      //
+                      // Spot number
+                      //
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 12.0,
+                          horizontal: 8.0,
+                        ),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Expanded(
+                              child: Text(
+                                "Poste",
+                                style: theme.textTheme.titleMedium!.copyWith(
+                                  color: theme.colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              _fisherman?.spotNumber ?? "?",
                               style: theme.textTheme.titleMedium!.copyWith(
                                 color: theme.colorScheme.onSurfaceVariant,
                               ),
                             ),
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            _fisherman?.spotNumber ?? "?",
-                            style: theme.textTheme.titleMedium!.copyWith(
-                              color: theme.colorScheme.onSurfaceVariant,
-                            ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
 
-                    const SizedBox(height: 30),
+                      const SizedBox(height: 30),
 
-                    //
-                    //  Catches list
-                    //
-                    CatchesList(
-                      catches: _fisherman?.catches ?? [],
-                      onCatchDeleted: _onCatchDeleted,
-                      onCatchEdited: _onCatchEdited,
-                    ),
-                  ],
+                      //
+                      //  Catches list
+                      //
+                      CatchesList(
+                        catches: _fisherman?.catches ?? [],
+                        onCatchDeleted: _onCatchDeleted,
+                        onCatchEdited: _onCatchEdited,
+                      ),
+                    ],
+                  ),
                 )
               : Center(child: CircularProgressIndicator()),
         ),

@@ -174,67 +174,70 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen> {
           ),
         ),
       ),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 18),
-          child: ListView(
-            children: [
-              const SizedBox(height: 8.0),
-              //
-              //  Fisherman list
-              //
-              //
-              // Fisherman Title
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    "Participants",
-                    style: theme.textTheme.titleLarge!.copyWith(
-                      fontWeight: FontWeight.bold,
+      body: RefreshIndicator(
+        onRefresh: () => _loadSessionDetails(),
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 18),
+            child: ListView(
+              children: [
+                const SizedBox(height: 8.0),
+                //
+                //  Fisherman list
+                //
+                //
+                // Fisherman Title
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      "Participants",
+                      style: theme.textTheme.titleLarge!.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
-                  IconButton(
-                    onPressed: () {
-                      context
-                          .pushNamed(
-                            "add_fisherman",
-                            pathParameters: {
-                              "session_id": widget.sessionId.toString(),
-                            },
-                          )
-                          .then((_) {
-                            _loadSessionDetails();
-                          });
-                    },
-                    icon: Icon(Icons.add),
-                  ),
-                ],
-              ),
-              // Fisherman list
-              if (_session?.fishermen != null)
-                FishermanList(
-                  fishermen: _session!.fishermen.toList(),
-                  sessionId: widget.sessionId,
-                  requestReload: () {
-                    _loadSessionDetails();
-                  },
+                    IconButton(
+                      onPressed: () {
+                        context
+                            .pushNamed(
+                              "add_fisherman",
+                              pathParameters: {
+                                "session_id": widget.sessionId.toString(),
+                              },
+                            )
+                            .then((_) {
+                              _loadSessionDetails();
+                            });
+                      },
+                      icon: Icon(Icons.add),
+                    ),
+                  ],
                 ),
+                // Fisherman list
+                if (_session?.fishermen != null)
+                  FishermanList(
+                    fishermen: _session!.fishermen.toList(),
+                    sessionId: widget.sessionId,
+                    requestReload: () {
+                      _loadSessionDetails();
+                    },
+                  ),
 
-              const SizedBox(height: 30),
-              //
-              //  Catch list
-              //
-              //
-              CatchesList(
-                catches: _session!.fishermen
-                    .map((f) => f.catches.toList())
-                    .expand((e) => e)
-                    .toList(),
-                onCatchDeleted: _onCatchDeleted,
-                onCatchEdited: _onCatchEdited,
-              ),
-            ],
+                const SizedBox(height: 30),
+                //
+                //  Catch list
+                //
+                //
+                CatchesList(
+                  catches: _session!.fishermen
+                      .map((f) => f.catches.toList())
+                      .expand((e) => e)
+                      .toList(),
+                  onCatchDeleted: _onCatchDeleted,
+                  onCatchEdited: _onCatchEdited,
+                ),
+              ],
+            ),
           ),
         ),
       ),
