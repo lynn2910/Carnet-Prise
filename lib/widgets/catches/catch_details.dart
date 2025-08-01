@@ -4,6 +4,7 @@ import 'package:carnet_prise/repositories/isar/session_repository.dart';
 import 'package:carnet_prise/widgets/catches/catch_item.dart';
 import 'package:carnet_prise/widgets/catches/delete_catch_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
@@ -11,11 +12,13 @@ import 'package:share_plus/share_plus.dart';
 class CatchDetails extends StatefulWidget {
   final Catch catchItem;
   final VoidCallback onCatchDeleted;
+  final VoidCallback onCatchEdited;
 
   const CatchDetails({
     super.key,
     required this.catchItem,
     required this.onCatchDeleted,
+    required this.onCatchEdited,
   });
 
   @override
@@ -66,8 +69,19 @@ class _CatchDetailsState extends State<CatchDetails> {
     }
   }
 
-  void _editItem() {
-    // TODO edit catch item
+  Future<void> _editItem() async {
+    await widget.catchItem.session.load();
+    if (!mounted) return;
+
+    context
+        .pushNamed(
+          "edit_catch",
+          pathParameters: {
+            "session_id": widget.catchItem.session.value!.id.toString(),
+            "catch_id": widget.catchItem.id.toString(),
+          },
+        )
+        .then((_) => widget.onCatchEdited());
   }
 
   Future<void> _shareItem() async {

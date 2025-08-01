@@ -6,11 +6,13 @@ import 'package:intl/intl.dart';
 class CatchesList extends StatefulWidget {
   final List<Catch> catches;
   final VoidCallback onCatchDeleted;
+  final VoidCallback onCatchEdited;
 
   const CatchesList({
     super.key,
     required this.catches,
     required this.onCatchDeleted,
+    required this.onCatchEdited,
   });
 
   @override
@@ -67,7 +69,11 @@ class _CatchesListState extends State<CatchesList> {
       }
 
       children.add(
-        CatchItem(catchItem: catchItem, onCatchDeleted: widget.onCatchDeleted),
+        CatchItem(
+          catchItem: catchItem,
+          onCatchDeleted: widget.onCatchDeleted,
+          onCatchEdited: widget.onCatchEdited,
+        ),
       );
 
       if (i < catches.length - 1) {

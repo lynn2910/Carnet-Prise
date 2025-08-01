@@ -6,11 +6,13 @@ import 'package:intl/intl.dart';
 class CatchItem extends StatefulWidget {
   final Catch catchItem;
   final VoidCallback onCatchDeleted;
+  final VoidCallback onCatchEdited;
 
   const CatchItem({
     super.key,
     required this.catchItem,
     required this.onCatchDeleted,
+    required this.onCatchEdited,
   });
 
   @override
@@ -18,6 +20,11 @@ class CatchItem extends StatefulWidget {
 }
 
 class _CatchItemState extends State<CatchItem> {
+  void _onCatchEdited() {
+    Navigator.of(context).pop();
+    widget.onCatchEdited();
+  }
+
   @override
   Widget build(BuildContext context) {
     var catchItem = widget.catchItem;
@@ -35,6 +42,7 @@ class _CatchItemState extends State<CatchItem> {
                 CatchDetails(
                   catchItem: catchItem,
                   onCatchDeleted: widget.onCatchDeleted,
+                  onCatchEdited: _onCatchEdited,
                 ),
               ],
             );

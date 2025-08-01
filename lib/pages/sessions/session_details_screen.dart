@@ -107,6 +107,10 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen> {
     _loadSessionDetails();
   }
 
+  void _onCatchEdited() {
+    _loadSessionDetails();
+  }
+
   @override
   Widget build(BuildContext context) {
     if (_session == null) {
@@ -228,6 +232,7 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen> {
                     .expand((e) => e)
                     .toList(),
                 onCatchDeleted: _onCatchDeleted,
+                onCatchEdited: _onCatchEdited,
               ),
             ],
           ),

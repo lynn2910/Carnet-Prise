@@ -108,6 +108,10 @@ class _FishermanDetailsScreenState extends State<FishermanDetailsScreen> {
     _loadData();
   }
 
+  void _onCatchEdited() {
+    _loadData();
+  }
+
   Future<void> _deleteFishermen() async {
     if (_session == null || _fisherman == null) {
       return;
@@ -321,6 +325,7 @@ class _FishermanDetailsScreenState extends State<FishermanDetailsScreen> {
                     CatchesList(
                       catches: _fisherman?.catches ?? [],
                       onCatchDeleted: _onCatchDeleted,
+                      onCatchEdited: _onCatchEdited,
                     ),
                   ],
                 )
