@@ -101,10 +101,65 @@ class _FishermanDetailsScreenState extends State<FishermanDetailsScreen> {
   }
 
   Future<void> _deleteFishermen() async {
-    // TODO Supprimer le pêcheur
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('Supprimer la session')));
+    if (_session == null || _fisherman == null) {
+      return;
+    }
+
+    bool? success = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        var theme = Theme.of(context);
+
+        return AlertDialog(
+          title: Text(
+            "Supprimer un pêcheur",
+            style: theme.textTheme.titleMedium!.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: [
+                Text(
+                  'Le pêcheur est toute ses prises seront supprimés. Une fois supprimée, vous ne pourrez pas restaurer les données.',
+                ),
+                SizedBox(height: 16),
+                Text('Êtes-vous sûr de vouloir supprimer ce pêcheur ?'),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () async {
+                await _sessionRepository!.removeFishermanFromSession(
+                  _session!.id,
+                  _fisherman!.name!,
+                );
+                if (context.mounted) {
+                  Navigator.of(context).pop(true);
+                }
+              },
+              child: const Text("Confirmer"),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text("Annuler"),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (success ?? false) {
+      if (mounted) {
+        Navigator.of(context).pop();
+      }
+    } else {
+      _loadData();
+    }
   }
 
   void _editFishermen() {

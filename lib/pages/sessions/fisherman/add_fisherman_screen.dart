@@ -166,7 +166,7 @@ class _AddFishermanScreenState extends State<AddFishermanScreen> {
               child: ElevatedButton.icon(
                 onPressed: _submitForm,
                 icon: const Icon(Icons.add),
-                label: const Text('Créer la session'),
+                label: const Text('Ajouter le pêcheur'),
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 40,

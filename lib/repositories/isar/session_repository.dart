@@ -139,11 +139,14 @@ class SessionRepository {
     await isar.writeTxn(() async {
       final session = await isar.sessions.get(sessionId);
       if (session != null) {
-        session.fishermen.removeWhere(
-          (f) =>
-              f.name != null &&
-              cleanString(f.name!) == cleanString(fishermanName),
-        );
+        session.fishermen = session.fishermen
+            .where(
+              (f) =>
+                  f.name == null ||
+                  cleanString(f.name!) != cleanString(fishermanName),
+            )
+            .toList();
+
         await isar.sessions.put(session);
       }
     });

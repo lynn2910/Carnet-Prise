@@ -75,7 +75,7 @@ class _DeleteCatchDialogState extends State<DeleteCatchDialog> {
           children: [
             Text('Une fois supprimée, vous ne pourrez pas la restaurer.'),
             SizedBox(height: 16),
-            Text('Êtes-vous sûr de vouloir cette entrée ?'),
+            Text('Êtes-vous sûr de vouloir supprimer cette entrée ?'),
           ],
         ),
       ),

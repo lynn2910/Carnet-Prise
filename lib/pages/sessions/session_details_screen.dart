@@ -212,6 +212,9 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen> {
                 FishermanList(
                   fishermen: _session!.fishermen.toList(),
                   sessionId: widget.sessionId,
+                  requestReload: () {
+                    _loadSessionDetails();
+                  },
                 ),
 
               const SizedBox(height: 30),

@@ -8,11 +8,13 @@ import '../../repositories/isar/session_repository.dart';
 class FishermanList extends StatefulWidget {
   final List<Fisherman> fishermen;
   final int sessionId;
+  final VoidCallback? requestReload;
 
   const FishermanList({
     super.key,
     required this.fishermen,
     required this.sessionId,
+    this.requestReload,
   });
 
   @override
@@ -66,13 +68,17 @@ class _FishermanListState extends State<FishermanList> {
 
         return InkWell(
           onTap: () {
-            context.pushNamed(
-              "fisherman_details",
-              pathParameters: {
-                "session_id": widget.sessionId.toString(),
-                "fisherman_id": cleanString(fisherman.name.toString()),
-              },
-            );
+            context
+                .pushNamed(
+                  "fisherman_details",
+                  pathParameters: {
+                    "session_id": widget.sessionId.toString(),
+                    "fisherman_id": cleanString(fisherman.name.toString()),
+                  },
+                )
+                .then((_) {
+                  if (widget.requestReload != null) widget.requestReload!();
+                });
           },
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 12.0),
