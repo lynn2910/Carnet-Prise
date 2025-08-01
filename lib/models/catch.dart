@@ -76,6 +76,37 @@ class Catch {
 
     return text;
   }
+
+  Catch();
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'fishType': fishType?.name,
+      'accident': accident?.name,
+      'otherFishType': otherFishType,
+      'weight': weight,
+      'fishermenName': fishermenName,
+      'catchDate': catchDate?.toIso8601String(),
+    };
+  }
+
+  factory Catch.fromJson(Map<String, dynamic> json) {
+    return Catch()
+      ..id = json['id'] as int
+      ..fishType = json['fishType'] != null
+          ? FishType.values.byName(json['fishType'])
+          : null
+      ..accident = json['accident'] != null
+          ? Accident.values.byName(json['accident'])
+          : null
+      ..otherFishType = json['otherFishType'] as String?
+      ..weight = json['weight'] as double?
+      ..fishermenName = json['fishermenName'] as String?
+      ..catchDate = json['catchDate'] != null
+          ? DateTime.parse(json['catchDate'])
+          : null;
+  }
 }
 
 enum Accident {
