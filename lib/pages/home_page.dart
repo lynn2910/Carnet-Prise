@@ -15,6 +15,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   SessionRepository? _sessionRepository;
+  bool _sessionsLoaded = false;
   List<Session> _sessions = [];
   String _username = "";
 
@@ -48,8 +49,17 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _loadSessions() async {
     if (_sessionRepository == null) return;
 
+    setState(() {
+      _sessionsLoaded = false;
+    });
+
     final sessions = await _sessionRepository!.getAllSessions();
-    if (!mounted) return;
+    if (!mounted) {
+      setState(() {
+        _sessionsLoaded = false;
+      });
+      return;
+    }
 
     sessions.sort((a, b) {
       return b.id.compareTo(a.id);
@@ -57,6 +67,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     setState(() {
       _sessions = sessions;
+      _sessionsLoaded = true;
     });
   }
 
@@ -94,30 +105,34 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                   ),
+                  if (!_sessionsLoaded)
+                    Center(child: LinearProgressIndicator()),
                   // Number of sessions indicator
-                  Padding(
-                    padding: const EdgeInsets.only(left: 20.0, bottom: 20.0),
-                    child: Text(
-                      "Vous avez ${_sessions.length} sessions",
-                      style: const TextStyle(fontSize: 16),
+                  if (_sessionsLoaded)
+                    Padding(
+                      padding: const EdgeInsets.only(left: 20.0, bottom: 20.0),
+                      child: Text(
+                        "Vous avez ${_sessions.length} sessions",
+                        style: const TextStyle(fontSize: 16),
+                      ),
                     ),
-                  ),
                   // Sessions
-                  _sessions.isEmpty
-                      ? const Center(
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(vertical: 50.0),
-                            child: Text(
-                              "Aucune session enregistrée.\nAppuyez sur '+' pour en créer une.",
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.white70,
+                  if (_sessionsLoaded)
+                    _sessions.isEmpty
+                        ? const Center(
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(vertical: 50.0),
+                              child: Text(
+                                "Aucune session enregistrée.\nAppuyez sur '+' pour en créer une.",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.white70,
+                                ),
                               ),
                             ),
-                          ),
-                        )
-                      : SessionList(sessions: _sessions),
+                          )
+                        : SessionList(sessions: _sessions),
                 ],
               ),
             ),
