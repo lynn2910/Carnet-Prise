@@ -95,7 +95,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
       },
     );
 
-    importData(replaceExisting: wipeDataBefore!);
+    if (wipeDataBefore == null) return;
+
+    importData(replaceExisting: wipeDataBefore);
   }
 
   Future<void> _exportData() async {

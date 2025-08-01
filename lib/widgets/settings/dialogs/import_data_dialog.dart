@@ -29,6 +29,12 @@ class ImportDataDialog extends StatelessWidget {
           },
           child: const Text("Supprimer les données existantes"),
         ),
+        TextButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          child: const Text("Annuler"),
+        ),
       ],
     );
   }
