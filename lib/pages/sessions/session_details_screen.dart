@@ -7,8 +7,6 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 
-import '../../models/catch.dart';
-
 class SessionDetailsScreen extends StatefulWidget {
   final int sessionId;
 
@@ -44,6 +42,7 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen> {
     ).showSnackBar(const SnackBar(content: Text('Afficher les statistiques')));
   }
 
+  // TODO Rajouter la fonction "delete" ? (voir fisherman_details_screen.dart)
   void _editSession() {
     context.pushNamed(
       "edit_session",

@@ -25,8 +25,8 @@ class _CatchItemState extends State<CatchItem> {
     var theme = Theme.of(context);
 
     return InkWell(
-      onTap: () async {
-        final bool? success = await showModalBottomSheet<bool>(
+      onTap: () {
+        showModalBottomSheet<bool>(
           isScrollControlled: true,
           context: context,
           builder: (BuildContext context) {

@@ -3,7 +3,6 @@ import 'package:intl/intl.dart';
 import 'package:isar/isar.dart';
 
 import '../widgets/catches/catch_item.dart';
-import 'fisherman.dart';
 
 part "catch.g.dart";
 

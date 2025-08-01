@@ -101,6 +101,20 @@ class _FishermanDetailsScreenState extends State<FishermanDetailsScreen> {
     _loadData();
   }
 
+  Future<void> _deleteFishermen() async {
+    // TODO Supprimer le pêcheur
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Supprimer la session')));
+  }
+
+  void _editFishermen() {
+    // TODO Modifier le pêcheur
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Modifier la session')));
+  }
+
   @override
   Widget build(BuildContext context) {
     var theme = Theme.of(context);
@@ -118,19 +132,39 @@ class _FishermanDetailsScreenState extends State<FishermanDetailsScreen> {
               );
             },
           ),
-          IconButton(
-            icon: const Icon(Icons.edit),
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Éditer la session')),
-              );
-            },
-          ),
+          // IconButton(
+          //   icon: const Icon(Icons.edit),
+          //   onPressed: () {
+          //     ScaffoldMessenger.of(context).showSnackBar(
+          //       const SnackBar(content: Text('Éditer la session')),
+          //     );
+          //   },
+          // ),
           IconButton(
             icon: const Icon(Icons.share),
             onPressed: () {
               _share();
             },
+          ),
+          PopupMenuButton<String>(
+            onSelected: (String result) {
+              switch (result) {
+                case "edit":
+                  _editFishermen();
+                case "delete":
+                  _deleteFishermen();
+              }
+            },
+            itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+              const PopupMenuItem<String>(
+                value: 'edit',
+                child: Text('Modifier'),
+              ),
+              const PopupMenuItem<String>(
+                value: 'delete',
+                child: Text('Supprimer'),
+              ),
+            ],
           ),
         ],
         bottom: PreferredSize(

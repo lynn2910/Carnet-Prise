@@ -1,5 +1,4 @@
 import 'package:carnet_prise/models/catch.dart';
-import 'package:carnet_prise/models/fisherman.dart';
 import 'package:carnet_prise/models/session.dart';
 import 'package:carnet_prise/repositories/isar_service.dart';
 import 'package:isar/isar.dart';
