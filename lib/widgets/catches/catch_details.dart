@@ -60,7 +60,7 @@ class _CatchDetailsState extends State<CatchDetails> {
       },
     );
 
-    if (mounted) {
+    if (mounted && success != null) {
       Navigator.of(context).pop();
 
       if (success == true) {

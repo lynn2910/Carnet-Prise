@@ -87,7 +87,12 @@ class _DeleteCatchDialogState extends State<DeleteCatchDialog> {
               Navigator.of(context).pop(success);
             }
           },
-          child: const Text("Confirmer"),
+          child: Text(
+            "Confirmer",
+            style: theme.textTheme.labelLarge!.copyWith(
+              color: theme.colorScheme.error,
+            ),
+          ),
         ),
         TextButton(
           onPressed: () {
