@@ -298,64 +298,56 @@ class _CatchDetailsState extends State<CatchDetails> {
                 //
                 //  DELETE
                 //
-                Expanded(
-                  child: FilledButton.icon(
-                    onPressed: () {
-                      _deleteItem();
-                    },
-                    label: Text(
-                      "Supprimer",
-                      style: theme.textTheme.titleMedium!.copyWith(
-                        color: theme.colorScheme.error,
-                      ),
-                    ),
-                    icon: Icon(
-                      Icons.delete,
-                      size: theme.textTheme.titleMedium!.fontSize,
-                      color: WidgetStateColor.resolveWith((states) {
-                        if (states.contains(WidgetState.hovered) ||
-                            states.contains(WidgetState.pressed)) {
-                          return theme.colorScheme.error;
-                        }
+                IconButton(
+                  onPressed: () {
+                    _deleteItem();
+                  },
+                  icon: Icon(
+                    Icons.delete,
+                    size: theme.textTheme.titleLarge!.fontSize,
+                    color: WidgetStateColor.resolveWith((states) {
+                      if (states.contains(WidgetState.hovered) ||
+                          states.contains(WidgetState.pressed)) {
                         return theme.colorScheme.error;
-                      }),
-                    ),
-                    style: ButtonStyle(
-                      backgroundColor: WidgetStateProperty.resolveWith<Color>((
-                        Set<WidgetState> states,
-                      ) {
-                        if (states.contains(WidgetState.hovered) ||
-                            states.contains(WidgetState.pressed)) {
-                          return theme.colorScheme.errorContainer.withValues(
-                            alpha: 0.8,
-                          );
-                        }
-                        return theme.colorScheme.errorContainer;
-                      }),
-                      shape: WidgetStateProperty.all<RoundedRectangleBorder>(
-                        RoundedRectangleBorder(
-                          borderRadius: const BorderRadius.only(
-                            topLeft: Radius.circular(25),
-                            bottomLeft: Radius.circular(25),
-                            topRight: Radius.circular(7),
-                            bottomRight: Radius.circular(7),
-                          ),
+                      }
+                      return theme.colorScheme.error;
+                    }),
+                  ),
+                  style: ButtonStyle(
+                    backgroundColor: WidgetStateProperty.resolveWith<Color>((
+                      Set<WidgetState> states,
+                    ) {
+                      if (states.contains(WidgetState.hovered) ||
+                          states.contains(WidgetState.pressed)) {
+                        return theme.colorScheme.errorContainer.withValues(
+                          alpha: 0.8,
+                        );
+                      }
+                      return theme.colorScheme.errorContainer;
+                    }),
+                    shape: WidgetStateProperty.all<RoundedRectangleBorder>(
+                      RoundedRectangleBorder(
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(25),
+                          bottomLeft: Radius.circular(25),
+                          topRight: Radius.circular(7),
+                          bottomRight: Radius.circular(7),
                         ),
                       ),
-                      overlayColor: WidgetStateProperty.resolveWith<Color?>((
-                        Set<WidgetState> states,
-                      ) {
-                        if (states.contains(WidgetState.hovered) ||
-                            states.contains(WidgetState.pressed)) {
-                          return theme.colorScheme.error.withValues(alpha: 0.1);
-                        }
-                        return null;
-                      }),
-                      padding: WidgetStateProperty.all<EdgeInsetsGeometry>(
-                        const EdgeInsets.symmetric(
-                          vertical: 12.0,
-                          horizontal: 16.0,
-                        ),
+                    ),
+                    overlayColor: WidgetStateProperty.resolveWith<Color?>((
+                      Set<WidgetState> states,
+                    ) {
+                      if (states.contains(WidgetState.hovered) ||
+                          states.contains(WidgetState.pressed)) {
+                        return theme.colorScheme.error.withValues(alpha: 0.1);
+                      }
+                      return null;
+                    }),
+                    padding: WidgetStateProperty.all<EdgeInsetsGeometry>(
+                      const EdgeInsets.symmetric(
+                        vertical: 12.0,
+                        horizontal: 20.0,
                       ),
                     ),
                   ),
@@ -364,50 +356,59 @@ class _CatchDetailsState extends State<CatchDetails> {
                 SizedBox(width: 2),
 
                 // Edit Button
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 2.0),
-                  child: IconButton.filled(
-                    onPressed: () {
-                      _editItem();
-                    },
-                    icon: Icon(
-                      Icons.edit,
-                      color: theme.colorScheme.onPrimaryContainer,
-                    ),
-                    style: ButtonStyle(
-                      backgroundColor: WidgetStateProperty.resolveWith<Color>((
-                        Set<WidgetState> states,
-                      ) {
-                        if (states.contains(WidgetState.hovered) ||
-                            states.contains(WidgetState.pressed)) {
-                          return primaryColor.withValues(alpha: 0.8);
-                        }
-                        return primaryColor;
-                      }),
-                      shape: WidgetStateProperty.all<RoundedRectangleBorder>(
-                        RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(7),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 2.0),
+                    child: FilledButton.icon(
+                      onPressed: () {
+                        _editItem();
+                      },
+                      label: Text(
+                        "Modifier",
+                        style: theme.textTheme.titleMedium!.copyWith(
+                          color: theme.colorScheme.onPrimaryContainer,
                         ),
                       ),
-                      overlayColor: WidgetStateProperty.resolveWith<Color?>((
-                        Set<WidgetState> states,
-                      ) {
-                        if (states.contains(WidgetState.hovered) ||
-                            states.contains(WidgetState.pressed)) {
-                          return theme.colorScheme.primary.withValues(
-                            alpha: 0.1,
-                          );
-                        }
-                        return null;
-                      }),
-                      padding: WidgetStateProperty.all<EdgeInsetsGeometry>(
-                        const EdgeInsets.symmetric(
-                          vertical: 12.0,
-                          horizontal: 20.0,
-                        ),
+                      icon: Icon(
+                        Icons.edit,
+                        color: theme.colorScheme.onPrimaryContainer,
+                        size: theme.textTheme.titleLarge!.fontSize,
                       ),
-                      minimumSize: WidgetStateProperty.all<Size>(
-                        const Size(48, 48),
+                      style: ButtonStyle(
+                        backgroundColor: WidgetStateProperty.resolveWith<Color>(
+                          (Set<WidgetState> states) {
+                            if (states.contains(WidgetState.hovered) ||
+                                states.contains(WidgetState.pressed)) {
+                              return primaryColor.withValues(alpha: 0.8);
+                            }
+                            return primaryColor;
+                          },
+                        ),
+                        shape: WidgetStateProperty.all<RoundedRectangleBorder>(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(7),
+                          ),
+                        ),
+                        overlayColor: WidgetStateProperty.resolveWith<Color?>((
+                          Set<WidgetState> states,
+                        ) {
+                          if (states.contains(WidgetState.hovered) ||
+                              states.contains(WidgetState.pressed)) {
+                            return theme.colorScheme.primary.withValues(
+                              alpha: 0.1,
+                            );
+                          }
+                          return null;
+                        }),
+                        padding: WidgetStateProperty.all<EdgeInsetsGeometry>(
+                          const EdgeInsets.symmetric(
+                            vertical: 12.0,
+                            horizontal: 20.0,
+                          ),
+                        ),
+                        minimumSize: WidgetStateProperty.all<Size>(
+                          const Size(48, 48),
+                        ),
                       ),
                     ),
                   ),
@@ -422,6 +423,7 @@ class _CatchDetailsState extends State<CatchDetails> {
                   },
                   icon: Icon(
                     Icons.share,
+                    size: theme.textTheme.titleLarge!.fontSize,
                     color: theme.colorScheme.onPrimaryContainer,
                   ),
                   style: ButtonStyle(
