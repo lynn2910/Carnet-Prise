@@ -198,12 +198,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
 
               const SizedBox(height: 25),
-              Expanded(
-                child: Text(
-                  "Application développée par Cédric COLIN",
-                  style: theme.textTheme.labelMedium!.copyWith(
-                    color: theme.colorScheme.outline,
-                  ),
+              Text(
+                "Application développée par Cédric COLIN",
+                style: theme.textTheme.labelMedium!.copyWith(
+                  color: theme.colorScheme.outline,
                 ),
               ),
             ],
