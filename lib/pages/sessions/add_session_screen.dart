@@ -144,7 +144,7 @@ class _AddSessionScreenState extends State<AddSessionScreen> {
               TextFormField(
                 controller: _locationController,
                 decoration: InputDecoration(
-                  hintText: 'Nom',
+                  hintText: 'Nom du lieu de pêche',
                   border: const OutlineInputBorder(),
                   suffixIcon: IconButton(
                     icon: const Icon(Icons.clear),

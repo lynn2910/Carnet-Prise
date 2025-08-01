@@ -61,7 +61,7 @@ class _UsernameInputState extends State<UsernameInput> {
       },
       decoration: InputDecoration(
         border: OutlineInputBorder(),
-        hintText: ("Entrez votre nom ici"),
+        hintText: "Entrez votre nom ici",
       ),
     );
   }
