@@ -57,12 +57,8 @@ class _FishermanListState extends State<FishermanList> {
       physics: const NeverScrollableScrollPhysics(),
       shrinkWrap: true,
       itemCount: widget.fishermen.length,
-      separatorBuilder: (context, index) => Divider(
-        height: 1,
-        color: theme.colorScheme.outlineVariant,
-        indent: 16,
-        endIndent: 16,
-      ),
+      separatorBuilder: (context, index) =>
+          Divider(height: 1, color: theme.colorScheme.outlineVariant),
       itemBuilder: (context, index) {
         final fisherman = widget.fishermen[index];
         final totalCatches = fisherman.catches.length;

@@ -202,8 +202,7 @@ class _FishermanDetailsScreenState extends State<FishermanDetailsScreen> {
                       ),
                     ),
 
-                    Divider(height: 1, color: theme.colorScheme.outlineVariant),
-                    const SizedBox(height: 25.0),
+                    const SizedBox(height: 30),
 
                     //
                     //  Catches list
