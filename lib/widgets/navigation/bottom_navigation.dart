@@ -1,3 +1,4 @@
+import 'package:carnet_prise/widgets/wrappers/keyboard_dismiss_wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -32,7 +33,7 @@ class ScaffoldWithNavBar extends StatelessWidget {
           _onItemTapped(idx, context);
         },
       ),
-      body: child,
+      body: KeyboardDismissWrapper(child: child),
     );
   }
 
