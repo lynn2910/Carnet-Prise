@@ -28,7 +28,15 @@ class _FishermanDetailsScreenState extends State<FishermanDetailsScreen> {
   Fisherman? _fisherman;
   bool _loaded = false;
 
+  late String _fishermanId;
+
   SessionRepository? _sessionRepository;
+
+  @override
+  void initState() {
+    super.initState();
+    _fishermanId = widget.fishermanId;
+  }
 
   @override
   void didChangeDependencies() {
@@ -47,7 +55,7 @@ class _FishermanDetailsScreenState extends State<FishermanDetailsScreen> {
     final session = await _sessionRepository!.getSessionById(widget.sessionId);
     final fisherman = await _sessionRepository!.getFishermanByName(
       widget.sessionId,
-      widget.fishermanId,
+      _fishermanId,
     );
 
     setState(() {
@@ -163,10 +171,23 @@ class _FishermanDetailsScreenState extends State<FishermanDetailsScreen> {
   }
 
   void _editFishermen() {
-    // TODO Modifier le pêcheur
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('Modifier la session')));
+    if (_session == null || _fisherman == null) return;
+    context
+        .pushNamed(
+          "edit_fisherman",
+          pathParameters: {
+            "session_id": _session!.id.toString(),
+            "fisherman_id": _fisherman!.name.toString(),
+          },
+        )
+        .then((result) {
+          if (result is String) {
+            setState(() {
+              _fishermanId = result;
+            });
+          }
+          _loadData();
+        });
   }
 
   @override
@@ -232,14 +253,16 @@ class _FishermanDetailsScreenState extends State<FishermanDetailsScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    _loaded ? '${_fisherman!.name}' : "Chargement",
+                    _loaded && _fisherman != null
+                        ? '${_fisherman!.name}'
+                        : "Chargement",
                     style: const TextStyle(
                       fontSize: 36,
                       fontWeight: FontWeight.w400,
                     ),
                   ),
                   const SizedBox(height: 4),
-                  if (_loaded)
+                  if (_loaded && _fisherman != null)
                     Text(
                       "Session n°${_session?.id} : ${_session?.spotName ?? "Lieu inconnu"}",
                       style: TextStyle(

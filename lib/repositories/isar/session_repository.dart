@@ -105,22 +105,50 @@ class SessionRepository {
   /// Add or create a new fisherman to the given session
   Future<void> addOrUpdateFishermanToSession(
     int sessionId,
-    Fisherman fisherman,
-  ) async {
+    Fisherman fisherman, {
+    String? oldName,
+  }) async {
     final isar = await _isarService.db;
     await isar.writeTxn(() async {
       final session = await isar.sessions.get(sessionId);
       if (session != null) {
-        Fisherman? alreadyExists = session.fishermen.firstWhereOrNull(
+        final fishermanToFind = oldName ?? fisherman.name;
+
+        final existingFishermanIndex = session.fishermen.indexWhere(
           (f) =>
-              cleanString(f.name ?? '0') == cleanString(fisherman.name ?? '1'),
+              cleanString(f.name ?? '') == cleanString(fishermanToFind ?? ''),
         );
 
-        if (alreadyExists != null) {
-          alreadyExists.spotNumber = fisherman.spotNumber;
+        final String? oldFishermanName = existingFishermanIndex != -1
+            ? session.fishermen[existingFishermanIndex].name
+            : null;
+        final String? newFishermanName = fisherman.name;
+
+        if (existingFishermanIndex != -1) {
+          // Update an existing fisherman
+          final existingFisherman = session.fishermen[existingFishermanIndex];
+          existingFisherman.spotNumber = fisherman.spotNumber;
+          existingFisherman.name = newFishermanName;
         } else {
-          session.fishermen = session.fishermen.toList(growable: true);
-          session.fishermen.add(fisherman);
+          // Add a new fisherman
+          final updatedFishermen = [...session.fishermen, fisherman];
+          session.fishermen = updatedFishermen;
+        }
+
+        if (oldName != null &&
+            newFishermanName != null &&
+            oldName != newFishermanName) {
+          final catchesToUpdate = await isar.catchs
+              .filter()
+              .session((q) => q.idEqualTo(sessionId))
+              .fishermenNameEqualTo(oldName, caseSensitive: false)
+              .findAll();
+
+          for (final catchItem in catchesToUpdate) {
+            catchItem.fishermenName = newFishermanName;
+          }
+
+          await isar.catchs.putAll(catchesToUpdate);
         }
 
         await isar.sessions.put(session);
