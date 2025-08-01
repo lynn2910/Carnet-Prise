@@ -97,12 +97,8 @@ class _EditCatchScreenState extends State<EditCatchScreen> {
 
   FishType _getEnumType(String displayName) {
     switch (displayName) {
-      case 'Carpe commune':
-        return FishType.commonCarp;
-      case 'Carpe miroir':
-        return FishType.mirrorCarp;
-      case 'Carpe amour':
-        return FishType.grassCarp;
+      case 'Carpe':
+        return FishType.carp;
       case 'Autre':
         return FishType.other;
       default:

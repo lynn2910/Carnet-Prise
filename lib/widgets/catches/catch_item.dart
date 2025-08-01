@@ -105,12 +105,8 @@ String _getWeight(Catch c) {
 
 String getCatchType(Catch c) {
   switch (c.fishType) {
-    case FishType.commonCarp:
-      return 'Carpe commune';
-    case FishType.mirrorCarp:
-      return 'Carpe miroir';
-    case FishType.grassCarp:
-      return 'Carpe amour';
+    case FishType.carp:
+      return 'Carpe';
     case FishType.other:
     default:
       return c.otherFishType ?? "--";

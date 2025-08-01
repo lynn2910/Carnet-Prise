@@ -118,17 +118,13 @@ enum Accident {
   none,
 }
 
-enum FishType { commonCarp, mirrorCarp, grassCarp, other }
+enum FishType { carp, other }
 
 List<String> getPredefinedFishTypes() {
   return FishType.values.map((e) {
     switch (e) {
-      case FishType.commonCarp:
-        return 'Carpe commune';
-      case FishType.mirrorCarp:
-        return 'Carpe miroir';
-      case FishType.grassCarp:
-        return 'Carpe amour';
+      case FishType.carp:
+        return 'Carpe';
       case FishType.other:
         return 'Autre';
     }
@@ -156,7 +152,7 @@ Future<List<String>> getAllAvailableFishTypes(Isar isar) async {
   List<String> customOthers = await _getCustomOtherFishTypes(isar);
 
   Set<String> allTypes = Set.from(predefined);
-  allTypes.addAll(customOthers);
+  allTypes.addAll(customOthers..sort());
 
-  return allTypes.toList()..sort();
+  return allTypes.toList();
 }
