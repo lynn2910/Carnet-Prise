@@ -193,6 +193,18 @@ class _AddCatchScreenState extends State<AddCatchScreen> {
       // Logique pour le poids et le type de poisson si pas d'accident
       if (_selectedAccident == Accident.none) {
         newCatch.weight = double.tryParse(_weightController.text);
+
+        if (newCatch.weight != null && newCatch.weight! < 0) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                'Erreur: Le poids ne peut pas être un nombre négatif.',
+              ),
+            ),
+          );
+          return;
+        }
+
         final enteredFishType = _fishTypeController.text.trim();
 
         if (getPredefinedFishTypes().contains(enteredFishType)) {
@@ -330,8 +342,12 @@ class _AddCatchScreenState extends State<AddCatchScreen> {
                             if (value == null || value.isEmpty) {
                               return 'Veuillez entrer le poids du poisson.';
                             }
-                            if (double.tryParse(value) == null) {
+                            double? d = double.tryParse(value);
+                            if (d == null) {
                               return 'Veuillez entrer un nombre valide.';
+                            }
+                            if (d < 0) {
+                              return "Veuillez entrer un nombre positif.";
                             }
                           }
                           return null;
