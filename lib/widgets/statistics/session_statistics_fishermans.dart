@@ -136,6 +136,19 @@ class _SessionStatisticsFishermanState
             ),
 
           // List
+          if ((_firstFisherman == null || _secondFisherman == null) &&
+              session.fishermen.length > 1)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 50),
+              child: Center(
+                child: Text("Sélectionnez deux pêcheurs pour les comparer."),
+              ),
+            ),
+
+          if (_firstFisherman != null &&
+              _secondFisherman != null &&
+              session.fishermen.length > 1)
+            Text("hello world!"),
         ],
       ),
     );
