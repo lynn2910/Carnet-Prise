@@ -1,7 +1,8 @@
 import 'package:carnet_prise/models/fisherman.dart';
 import 'package:carnet_prise/models/session.dart';
 import 'package:carnet_prise/widgets/sessions/fisherman_list.dart';
-import 'package:carnet_prise/widgets/statistics/comparisons/FishermanSelection.dart';
+import 'package:carnet_prise/widgets/statistics/comparisons/catches_comparisons.dart';
+import 'package:carnet_prise/widgets/statistics/comparisons/fisherman_selection.dart';
 import 'package:flutter/material.dart';
 
 class SessionStatisticsFisherman extends StatefulWidget {
@@ -148,7 +149,7 @@ class _SessionStatisticsFishermanState
           if (_firstFisherman != null &&
               _secondFisherman != null &&
               session.fishermen.length > 1)
-            Text("hello world!"),
+            CatchesComparisons(compared: [_firstFisherman!, _secondFisherman!]),
         ],
       ),
     );
