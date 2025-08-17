@@ -7,7 +7,9 @@ import 'package:carnet_prise/pages/sessions/fisherman/add_fisherman_screen.dart'
 import 'package:carnet_prise/pages/sessions/fisherman/edit_fisherman_screen.dart';
 import 'package:carnet_prise/pages/sessions/fisherman/fisherman_details_screen.dart';
 import 'package:carnet_prise/pages/sessions/session_details_screen.dart';
-import 'package:carnet_prise/pages/statistics/session_statistics_fishermans.dart';
+import 'package:carnet_prise/pages/statistics/single_session_statistics.dart';
+import 'package:carnet_prise/widgets/statistics/session_statistics_fishermans.dart';
+import 'package:carnet_prise/widgets/statistics/session_statistics_resume.dart';
 import 'package:carnet_prise/pages/statistics_page.dart';
 import 'package:carnet_prise/pages/settings_page.dart';
 import 'package:carnet_prise/widgets/navigation/bottom_navigation.dart';
@@ -146,7 +148,7 @@ final router = GoRouter(
                 final sessionId = int.parse(
                   state.pathParameters['session_id']!,
                 );
-                return SessionStatisticsFisherman(sessionId: sessionId);
+                return SingleSessionStatistics(sessionId: sessionId);
               },
             ),
           ],
