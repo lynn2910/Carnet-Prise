@@ -118,6 +118,19 @@ enum Accident {
   none,
 }
 
+String getAccidentName(Accident accident) {
+  switch (accident) {
+    case Accident.snaggedLine:
+      {
+        return "Décrochage";
+      }
+    case Accident.lineBreak:
+      return "Ligne cassée";
+    default:
+      return "Inconnu";
+  }
+}
+
 enum FishType { carp, other }
 
 List<String> getPredefinedFishTypes() {
@@ -129,6 +142,15 @@ List<String> getPredefinedFishTypes() {
         return 'Autre';
     }
   }).toList();
+}
+
+String getFishTypeName(FishType fishType) {
+  switch (fishType) {
+    case FishType.carp:
+      return 'Carpe';
+    case FishType.other:
+      return 'Autre';
+  }
 }
 
 Future<List<String>> _getCustomOtherFishTypes(Isar isar) async {
