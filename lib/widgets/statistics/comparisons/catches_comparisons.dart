@@ -2,9 +2,7 @@ import 'package:carnet_prise/models/fisherman.dart';
 import 'package:carnet_prise/models/catch.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'dart:math';
 
-// Classe utilitaire pour stocker les paires de prises
 class _ComparisonRow {
   final Catch? catch1;
   final Catch? catch2;
@@ -54,7 +52,6 @@ class _CatchesComparisonsState extends State<CatchesComparisons> {
     return Column(mainAxisSize: MainAxisSize.min, children: items);
   }
 
-  /// Construit la liste des widgets en regroupant les prises dans une marge de 10 minutes.
   List<Widget> _buildComparisonList(
     List<Catch> catches1,
     List<Catch> catches2,
@@ -62,7 +59,6 @@ class _CatchesComparisonsState extends State<CatchesComparisons> {
     final margin = const Duration(minutes: 10);
     final items = <Widget>[];
 
-    // Travailler avec des copies modifiables, triées par date (plus récent en premier).
     final unpaired1 = catches1.where((c) => c.catchDate != null).toList()
       ..sort((a, b) => b.catchDate!.compareTo(a.catchDate!));
     final unpaired2 = catches2.where((c) => c.catchDate != null).toList()
@@ -70,13 +66,11 @@ class _CatchesComparisonsState extends State<CatchesComparisons> {
 
     final rows = <_ComparisonRow>[];
 
-    // Tant qu'il reste des prises à traiter...
     while (unpaired1.isNotEmpty || unpaired2.isNotEmpty) {
       Catch primaryCatch;
       List<Catch> listToSearch;
       bool primaryIsFromList1;
 
-      // Déterminer quelle est la prise la plus récente toutes listes confondues.
       if (unpaired1.isEmpty) {
         primaryCatch = unpaired2.removeAt(0);
         listToSearch = unpaired1;
@@ -97,7 +91,6 @@ class _CatchesComparisonsState extends State<CatchesComparisons> {
         }
       }
 
-      // Chercher la meilleure correspondance dans l'autre liste (la plus proche en temps).
       Catch? bestMatch;
       int bestMatchIndex = -1;
       Duration minDifference = const Duration(days: 999);
@@ -115,7 +108,6 @@ class _CatchesComparisonsState extends State<CatchesComparisons> {
         }
       }
 
-      // Si une correspondance est trouvée, créer une ligne et retirer la prise de sa liste.
       if (bestMatch != null) {
         listToSearch.removeAt(bestMatchIndex);
         rows.add(
@@ -129,7 +121,6 @@ class _CatchesComparisonsState extends State<CatchesComparisons> {
           ),
         );
       } else {
-        // Sinon, c'est un événement solo.
         rows.add(
           _ComparisonRow(
             catch1: primaryIsFromList1 ? primaryCatch : null,
@@ -140,7 +131,6 @@ class _CatchesComparisonsState extends State<CatchesComparisons> {
       }
     }
 
-    // Construire la liste de widgets à partir des lignes générées.
     String? lastDateKey;
     for (final row in rows) {
       final currentDateKey = _getDateKey(row.sortDate);
@@ -152,13 +142,6 @@ class _CatchesComparisonsState extends State<CatchesComparisons> {
     }
 
     return items;
-  }
-
-  // --- Les autres méthodes restent inchangées ---
-
-  bool _isSameDateTime(DateTime? date1, DateTime? date2) {
-    if (date1 == null || date2 == null) return false;
-    return date1.millisecondsSinceEpoch == date2.millisecondsSinceEpoch;
   }
 
   String _getDateKey(DateTime? date) {
