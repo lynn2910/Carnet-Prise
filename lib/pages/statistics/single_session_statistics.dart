@@ -2,6 +2,7 @@ import 'package:carnet_prise/models/session.dart';
 import 'package:carnet_prise/widgets/statistics/session_statistics_fishermans.dart';
 import 'package:carnet_prise/widgets/statistics/session_statistics_resume.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../../repositories/isar/session_repository.dart';
@@ -50,6 +51,17 @@ class _SingleSessionStatisticsState extends State<SingleSessionStatistics> {
         appBar: AppBar(
           automaticallyImplyLeading: true,
           title: null,
+          actions: [
+            IconButton(
+              onPressed: () {
+                context.pushNamed(
+                  'session_details',
+                  pathParameters: {"session_id": widget.sessionId.toString()},
+                );
+              },
+              icon: Icon(Icons.phishing),
+            ),
+          ],
           bottom: PreferredSize(
             preferredSize: const Size.fromHeight(140.0),
             child: Align(
