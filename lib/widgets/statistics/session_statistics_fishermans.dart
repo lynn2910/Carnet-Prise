@@ -52,6 +52,16 @@ class _SessionStatisticsFishermanState
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    if (widget.session != null && widget.session!.fishermen.length == 2) {
+      _onSelectChange(widget.session!.fishermen[0], isFirst: true);
+      _onSelectChange(widget.session!.fishermen[1], isFirst: false);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     if (widget.session == null) {
       return Center(child: CircularProgressIndicator());
