@@ -204,22 +204,6 @@ class _FishermanDetailsScreenState extends State<FishermanDetailsScreen> {
         title: null,
         actions: [
           IconButton(
-            icon: const Icon(Icons.analytics_outlined),
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Afficher les statistiques')),
-              );
-            },
-          ),
-          // IconButton(
-          //   icon: const Icon(Icons.edit),
-          //   onPressed: () {
-          //     ScaffoldMessenger.of(context).showSnackBar(
-          //       const SnackBar(content: Text('Éditer la session')),
-          //     );
-          //   },
-          // ),
-          IconButton(
             icon: const Icon(Icons.share),
             onPressed: () {
               _share();

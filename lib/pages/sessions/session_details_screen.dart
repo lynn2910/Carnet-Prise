@@ -35,14 +35,13 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen> {
     });
   }
 
-  // TODO Aller aux stats
   void _goToAnalytics() {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('Afficher les statistiques')));
+    context.pushNamed(
+      "session_statistics",
+      pathParameters: {"session_id": widget.sessionId.toString()},
+    );
   }
 
-  // TODO Rajouter la fonction "delete" ? (voir fisherman_details_screen.dart)
   void _editSession() {
     context.pushNamed(
       "edit_session",
