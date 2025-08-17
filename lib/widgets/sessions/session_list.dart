@@ -5,8 +5,13 @@ import 'package:go_router/go_router.dart';
 
 class SessionList extends StatefulWidget {
   final List<Session> sessions;
+  final Function(Session session) onItemClick;
 
-  const SessionList({super.key, required this.sessions});
+  const SessionList({
+    super.key,
+    required this.sessions,
+    required this.onItemClick,
+  });
 
   @override
   State<SessionList> createState() => _SessionListState();
@@ -39,7 +44,7 @@ class _SessionListState extends State<SessionList> {
             child: InkWell(
               borderRadius: BorderRadius.circular(12.0),
               onTap: () {
-                context.push('/session/${session.id}');
+                widget.onItemClick(session);
               },
               child: Padding(
                 padding: const EdgeInsets.all(16.0),

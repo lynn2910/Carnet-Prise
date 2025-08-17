@@ -71,8 +71,14 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  void _onItemClick(Session session) {
+    context.push('/session/${session.id}');
+  }
+
   @override
   Widget build(BuildContext context) {
+    var theme = Theme.of(context);
+
     return Scaffold(
       body: RefreshIndicator(
         onRefresh: _loadSessions,
@@ -113,13 +119,13 @@ class _HomeScreenState extends State<HomeScreen> {
                       padding: const EdgeInsets.only(left: 20.0, bottom: 20.0),
                       child: Text(
                         "Vous avez ${_sessions.length} sessions",
-                        style: const TextStyle(fontSize: 16),
+                        style: theme.textTheme.titleMedium!,
                       ),
                     ),
                   // Sessions
                   if (_sessionsLoaded)
                     _sessions.isEmpty
-                        ? const Center(
+                        ? Center(
                             child: Padding(
                               padding: EdgeInsets.symmetric(vertical: 50.0),
                               child: Text(
@@ -127,12 +133,15 @@ class _HomeScreenState extends State<HomeScreen> {
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                   fontSize: 16,
-                                  color: Colors.white70,
+                                  color: theme.colorScheme.onSurfaceVariant,
                                 ),
                               ),
                             ),
                           )
-                        : SessionList(sessions: _sessions),
+                        : SessionList(
+                            sessions: _sessions,
+                            onItemClick: _onItemClick,
+                          ),
                 ],
               ),
             ),
