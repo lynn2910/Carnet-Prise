@@ -31,9 +31,10 @@ class _SessionStatisticsResumeState extends State<SessionStatisticsResume> {
       if (widget.session?.fishermen != null) {
         for (var fisherman in widget.session!.fishermen) {
           for (var catchData in fisherman.catches) {
-            if (catchData.accident == Accident.none ||
-                catchData.accident == null) {
+            if (catchData.accident == null ||
+                catchData.accident == Accident.none) {
               String fishName;
+
               if (catchData.fishType == FishType.carp) {
                 fishName = 'Carpe';
               } else if (catchData.fishType == FishType.other) {
@@ -42,10 +43,10 @@ class _SessionStatisticsResumeState extends State<SessionStatisticsResume> {
                 try {
                   fishName = getFishTypeName(catchData.fishType!);
                 } catch (e) {
-                  fishName = catchData.otherFishType ?? "Autre";
+                  fishName = catchData.otherFishType ?? 'Inconnu';
                 }
               } else {
-                fishName = 'Autre';
+                fishName = catchData.otherFishType ?? 'Inconnu';
               }
 
               fishCounts[fishName] = (fishCounts[fishName] ?? 0) + 1;
@@ -122,13 +123,21 @@ class _SessionStatisticsResumeState extends State<SessionStatisticsResume> {
             int hashCode = catchItem.accident!.hashCode;
             _accidentsCounts[hashCode] = (_accidentsCounts[hashCode] ?? 0) + 1;
           } else {
-            // Normal fish :)
+            // Normal fish
             String name;
-            if (catchItem.fishType != null &&
-                catchItem.fishType != FishType.other) {
-              name = getFishTypeName(catchItem.fishType!);
+
+            if (catchItem.fishType == FishType.carp) {
+              name = 'Carpe';
+            } else if (catchItem.fishType == FishType.other) {
+              name = catchItem.otherFishType ?? 'Autre';
+            } else if (catchItem.fishType != null) {
+              try {
+                name = getFishTypeName(catchItem.fishType!);
+              } catch (e) {
+                name = catchItem.otherFishType ?? 'Inconnu';
+              }
             } else {
-              name = catchItem.otherFishType ?? "Inconnu";
+              name = catchItem.otherFishType ?? 'Inconnu';
             }
 
             _totalFishesCount++;
