@@ -56,6 +56,8 @@ class _SessionStatisticsResumeState extends State<SessionStatisticsResume> {
   bool _finishedLoading = false;
 
   void _prepareStatistics() {
+    if (widget.session == null) return;
+
     for (var fisherman in widget.session!.fishermen) {
       for (var catchItem in fisherman.catches) {
         // Accident
@@ -130,8 +132,13 @@ class _SessionStatisticsResumeState extends State<SessionStatisticsResume> {
           //
 
           // Accidents
-          for (var accident in Accident.values.where((a) => a != Accident.none))
-            Padding(
+          ...Accident.values.where((a) => a != Accident.none).map((accident) {
+            final accidentCount = _accidentsCounts[accident.hashCode] ?? 0;
+            final accidentPercentage = _totalAccidentsCount > 0
+                ? (accidentCount / _totalAccidentsCount * 100).toInt()
+                : 0;
+
+            return Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -145,14 +152,15 @@ class _SessionStatisticsResumeState extends State<SessionStatisticsResume> {
                     ),
                   ),
                   Text(
-                    "${_accidentsCounts[accident.hashCode] ?? 0} (${(((_accidentsCounts[accident.hashCode] ?? 0) / _totalAccidentsCount) * 100).toInt()}%)",
+                    "$accidentCount ($accidentPercentage%)",
                     style: theme.textTheme.labelLarge!.copyWith(
                       fontWeight: FontWeight.normal,
                     ),
                   ),
                 ],
               ),
-            ),
+            );
+          }),
 
           Divider(thickness: 2),
           // Fishes
@@ -169,6 +177,11 @@ class _SessionStatisticsResumeState extends State<SessionStatisticsResume> {
           ..._fishes.entries.map((entry) {
             final name = entry.key;
             final count = entry.value;
+
+            final fishPercentage = _totalFishesCount > 0
+                ? (count / _totalFishesCount * 100).toInt()
+                : 0;
+
             return Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
               child: Row(
@@ -183,7 +196,7 @@ class _SessionStatisticsResumeState extends State<SessionStatisticsResume> {
                     ),
                   ),
                   Text(
-                    "$count (${((count / _totalFishesCount) * 100).toInt()}%)",
+                    "$count ($fishPercentage%)",
                     style: theme.textTheme.labelLarge!.copyWith(
                       fontWeight: FontWeight.normal,
                     ),
