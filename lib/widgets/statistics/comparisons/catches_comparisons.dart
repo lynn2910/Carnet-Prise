@@ -262,7 +262,7 @@ class _CatchesComparisonsState extends State<CatchesComparisons> {
 
   Color _getCatchColor(Catch catchData) {
     if (catchData.accident != null && catchData.accident != Accident.none) {
-      return Colors.red.shade50;
+      return Colors.red.withValues(alpha: 0.15);
     }
     return Colors.transparent;
   }
