@@ -2,6 +2,16 @@ import 'package:carnet_prise/models/fisherman.dart';
 import 'package:carnet_prise/models/catch.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'dart:math';
+
+// Classe utilitaire pour stocker les paires de prises
+class _ComparisonRow {
+  final Catch? catch1;
+  final Catch? catch2;
+  final DateTime sortDate;
+
+  _ComparisonRow({this.catch1, this.catch2, required this.sortDate});
+}
 
 class CatchesComparisons extends StatefulWidget {
   final List<Fisherman> compared;
@@ -29,53 +39,153 @@ class _CatchesComparisonsState extends State<CatchesComparisons> {
     final fisherman1 = widget.compared[0];
     final fisherman2 = widget.compared[1];
 
-    final catches1 = List<Catch>.from(fisherman1.catches)
-      ..sort(
-        (a, b) => (b.catchDate ?? DateTime.now()).compareTo(
-          a.catchDate ?? DateTime.now(),
-        ),
-      );
-    final catches2 = List<Catch>.from(fisherman2.catches)
-      ..sort(
-        (a, b) => (b.catchDate ?? DateTime.now()).compareTo(
-          a.catchDate ?? DateTime.now(),
-        ),
-      );
+    final catches1 = List<Catch>.from(fisherman1.catches);
+    final catches2 = List<Catch>.from(fisherman2.catches);
 
-    final maxRows = catches1.length > catches2.length
-        ? catches1.length
-        : catches2.length;
-
-    if (maxRows == 0) {
-      return Column(
+    if (catches1.isEmpty && catches2.isEmpty) {
+      return const Column(
         mainAxisSize: MainAxisSize.min,
-        children: [
-          const SizedBox(height: 16),
-          const Text('Aucune capture à comparer'),
-        ],
+        children: [SizedBox(height: 16), Text('Aucune capture à comparer')],
       );
     }
 
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        ConstrainedBox(
-          constraints: BoxConstraints(
-            maxHeight: MediaQuery.of(context).size.height * 0.4,
-            minHeight: 100,
-          ),
-          child: ListView.builder(
-            shrinkWrap: true,
-            itemCount: maxRows,
-            itemBuilder: (context, index) {
-              final catch1 = index < catches1.length ? catches1[index] : null;
-              final catch2 = index < catches2.length ? catches2[index] : null;
+    final items = _buildComparisonList(catches1, catches2);
 
-              return _buildComparisonRow(catch1, catch2);
-            },
+    return Column(mainAxisSize: MainAxisSize.min, children: items);
+  }
+
+  /// Construit la liste des widgets en regroupant les prises dans une marge de 10 minutes.
+  List<Widget> _buildComparisonList(
+    List<Catch> catches1,
+    List<Catch> catches2,
+  ) {
+    final margin = const Duration(minutes: 10);
+    final items = <Widget>[];
+
+    // Travailler avec des copies modifiables, triées par date (plus récent en premier).
+    final unpaired1 = catches1.where((c) => c.catchDate != null).toList()
+      ..sort((a, b) => b.catchDate!.compareTo(a.catchDate!));
+    final unpaired2 = catches2.where((c) => c.catchDate != null).toList()
+      ..sort((a, b) => b.catchDate!.compareTo(a.catchDate!));
+
+    final rows = <_ComparisonRow>[];
+
+    // Tant qu'il reste des prises à traiter...
+    while (unpaired1.isNotEmpty || unpaired2.isNotEmpty) {
+      Catch primaryCatch;
+      List<Catch> listToSearch;
+      bool primaryIsFromList1;
+
+      // Déterminer quelle est la prise la plus récente toutes listes confondues.
+      if (unpaired1.isEmpty) {
+        primaryCatch = unpaired2.removeAt(0);
+        listToSearch = unpaired1;
+        primaryIsFromList1 = false;
+      } else if (unpaired2.isEmpty) {
+        primaryCatch = unpaired1.removeAt(0);
+        listToSearch = unpaired2;
+        primaryIsFromList1 = true;
+      } else {
+        if (unpaired1.first.catchDate!.isAfter(unpaired2.first.catchDate!)) {
+          primaryCatch = unpaired1.removeAt(0);
+          listToSearch = unpaired2;
+          primaryIsFromList1 = true;
+        } else {
+          primaryCatch = unpaired2.removeAt(0);
+          listToSearch = unpaired1;
+          primaryIsFromList1 = false;
+        }
+      }
+
+      // Chercher la meilleure correspondance dans l'autre liste (la plus proche en temps).
+      Catch? bestMatch;
+      int bestMatchIndex = -1;
+      Duration minDifference = const Duration(days: 999);
+
+      for (int i = 0; i < listToSearch.length; i++) {
+        final potentialMatch = listToSearch[i];
+        final difference = primaryCatch.catchDate!
+            .difference(potentialMatch.catchDate!)
+            .abs();
+
+        if (difference <= margin && difference < minDifference) {
+          minDifference = difference;
+          bestMatch = potentialMatch;
+          bestMatchIndex = i;
+        }
+      }
+
+      // Si une correspondance est trouvée, créer une ligne et retirer la prise de sa liste.
+      if (bestMatch != null) {
+        listToSearch.removeAt(bestMatchIndex);
+        rows.add(
+          _ComparisonRow(
+            catch1: primaryIsFromList1 ? primaryCatch : bestMatch,
+            catch2: primaryIsFromList1 ? bestMatch : primaryCatch,
+            sortDate:
+                primaryCatch.catchDate!.compareTo(bestMatch.catchDate!) > 0
+                ? primaryCatch.catchDate!
+                : bestMatch.catchDate!,
           ),
-        ),
-      ],
+        );
+      } else {
+        // Sinon, c'est un événement solo.
+        rows.add(
+          _ComparisonRow(
+            catch1: primaryIsFromList1 ? primaryCatch : null,
+            catch2: primaryIsFromList1 ? null : primaryCatch,
+            sortDate: primaryCatch.catchDate!,
+          ),
+        );
+      }
+    }
+
+    // Construire la liste de widgets à partir des lignes générées.
+    String? lastDateKey;
+    for (final row in rows) {
+      final currentDateKey = _getDateKey(row.sortDate);
+      if (currentDateKey != lastDateKey) {
+        items.add(_buildDateSeparator(row.sortDate));
+        lastDateKey = currentDateKey;
+      }
+      items.add(_buildComparisonRow(row.catch1, row.catch2));
+    }
+
+    return items;
+  }
+
+  // --- Les autres méthodes restent inchangées ---
+
+  bool _isSameDateTime(DateTime? date1, DateTime? date2) {
+    if (date1 == null || date2 == null) return false;
+    return date1.millisecondsSinceEpoch == date2.millisecondsSinceEpoch;
+  }
+
+  String _getDateKey(DateTime? date) {
+    if (date == null) return 'unknown';
+    return DateFormat('dd/MM/yyyy').format(date);
+  }
+
+  Widget _buildDateSeparator(DateTime? date) {
+    if (date == null) return const SizedBox.shrink();
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+      child: Row(
+        children: [
+          Expanded(child: Container(height: 1, color: Colors.grey.shade300)),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Text(
+              DateFormat('dd/MM/yyyy').format(date),
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: Colors.grey.shade600,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+          Expanded(child: Container(height: 1, color: Colors.grey.shade300)),
+        ],
+      ),
     );
   }
 
@@ -86,9 +196,7 @@ class _CatchesComparisonsState extends State<CatchesComparisons> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Expanded(child: _buildCatchCard(catch1, isLeft: true)),
-
           const SizedBox(width: 16),
-
           Expanded(child: _buildCatchCard(catch2, isLeft: false)),
         ],
       ),
@@ -121,9 +229,7 @@ class _CatchesComparisonsState extends State<CatchesComparisons> {
               fontWeight: FontWeight.w500,
             ),
           ),
-
           const SizedBox(height: 2),
-
           Text(
             _getCatchDisplayText(catchData),
             style: theme.textTheme.titleMedium!.copyWith(
