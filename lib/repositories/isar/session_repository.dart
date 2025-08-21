@@ -119,9 +119,6 @@ class SessionRepository {
               cleanString(f.name ?? '') == cleanString(fishermanToFind ?? ''),
         );
 
-        final String? oldFishermanName = existingFishermanIndex != -1
-            ? session.fishermen[existingFishermanIndex].name
-            : null;
         final String? newFishermanName = fisherman.name;
 
         if (existingFishermanIndex != -1) {
