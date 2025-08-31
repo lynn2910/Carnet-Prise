@@ -105,18 +105,7 @@ class _AddCatchScreenState extends State<AddCatchScreen> {
 
   List<DropdownMenuItem<Accident>> _getAccidentDropdownItems() {
     return Accident.values.map((accident) {
-      String text;
-      switch (accident) {
-        case Accident.snaggedLine:
-          text = 'Décrochage';
-          break;
-        case Accident.lineBreak:
-          text = 'Ligne cassée';
-          break;
-        case Accident.none:
-          text = 'Aucun accident';
-          break;
-      }
+      String text = getAccidentName(accident);
       return DropdownMenuItem(value: accident, child: Text(text));
     }).toList();
   }

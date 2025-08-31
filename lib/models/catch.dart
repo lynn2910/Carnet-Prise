@@ -64,14 +64,7 @@ class Catch {
     if (accident == Accident.none) {
       text += getCatchType(this);
     } else {
-      switch (accident) {
-        case Accident.lineBreak:
-          text += "Ligne cassée";
-        case Accident.snaggedLine:
-          text += "Décroché";
-        default:
-          throw UnimplementedError("You should have this value");
-      }
+      text += accident != null ? getAccidentName(accident!) : 'ERROR';
     }
 
     return text;
@@ -125,7 +118,7 @@ String getAccidentName(Accident accident) {
         return "Décrochage";
       }
     case Accident.lineBreak:
-      return "Ligne cassée";
+      return "Cassée";
     default:
       return "Inconnu";
   }

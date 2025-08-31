@@ -476,14 +476,7 @@ class _CatchDetailsState extends State<CatchDetails> {
 }
 
 String formatAccident(Accident accident) {
-  switch (accident) {
-    case Accident.lineBreak:
-      return "ligne cassée";
-    case Accident.snaggedLine:
-      return "décroché";
-    case Accident.none:
-      return "?";
-  }
+  return getAccidentName(accident);
 }
 
 String formatDate(DateTime date) {

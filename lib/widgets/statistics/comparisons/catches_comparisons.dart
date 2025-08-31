@@ -231,14 +231,7 @@ class _CatchesComparisonsState extends State<CatchesComparisons> {
 
   String _getCatchDisplayText(Catch catchData) {
     if (catchData.accident != null && catchData.accident != Accident.none) {
-      switch (catchData.accident!) {
-        case Accident.snaggedLine:
-          return 'décroche';
-        case Accident.lineBreak:
-          return 'ligne cassée';
-        case Accident.none:
-          break;
-      }
+      return getAccidentName(catchData.accident!);
     }
 
     String fishName = _getFishDisplayName(catchData);

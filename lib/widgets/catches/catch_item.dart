@@ -112,14 +112,10 @@ String _formatDatetime(DateTime date) {
 }
 
 String _getWeight(Catch c) {
-  switch (c.accident) {
-    case Accident.lineBreak:
-      return "ligne cassée";
-    case Accident.snaggedLine:
-      return "décroché";
-    case Accident.none:
-    default:
-      return "${c.weight?.toStringAsFixed(2)} Kg";
+  if (c.accident == null || c.accident! == Accident.none) {
+    return "${c.weight?.toStringAsFixed(2)} Kg";
+  } else {
+    return getAccidentName(c.accident!);
   }
 }
 
