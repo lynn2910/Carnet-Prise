@@ -49,6 +49,71 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen> {
     );
   }
 
+  Future<void> _deleteFishermen() async {
+    if (_session == null) {
+      return;
+    }
+
+    bool? success = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        var theme = Theme.of(context);
+
+        return AlertDialog(
+          title: Text(
+            "Supprimer une session de pêche",
+            style: theme.textTheme.titleMedium!.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: [
+                Text(
+                  "Cette session, tout les pêcheurs et toutes les prises seront supprimés. Une fois supprimée, vous ne pourrez pas restaurer les données.",
+                ),
+                SizedBox(height: 16),
+                Text('Êtes-vous sûr de vouloir supprimer cette session ?'),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () async {
+                await _sessionRepository.deleteSession(_session!.id);
+                if (context.mounted) {
+                  Navigator.of(context).pop(true);
+                }
+              },
+              child: Text(
+                "Confirmer",
+                style: theme.textTheme.bodyMedium!.copyWith(
+                  color: theme.colorScheme.error,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text("Annuler"),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (success ?? false) {
+      if (mounted) {
+        context.pushNamed("home");
+      }
+    } else {
+      _loadSessionDetails();
+    }
+  }
+
   void _shareSession() {
     if (_session == null) return;
 
@@ -133,16 +198,30 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen> {
             },
           ),
           IconButton(
-            icon: const Icon(Icons.edit),
-            onPressed: () {
-              _editSession();
-            },
-          ),
-          IconButton(
             icon: const Icon(Icons.share),
             onPressed: () {
               _shareSession();
             },
+          ),
+          PopupMenuButton<String>(
+            onSelected: (String result) {
+              switch (result) {
+                case "edit":
+                  _editSession();
+                case "delete":
+                  _deleteFishermen();
+              }
+            },
+            itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+              const PopupMenuItem<String>(
+                value: 'edit',
+                child: Text('Modifier'),
+              ),
+              const PopupMenuItem<String>(
+                value: 'delete',
+                child: Text('Supprimer'),
+              ),
+            ],
           ),
         ],
         bottom: PreferredSize(
