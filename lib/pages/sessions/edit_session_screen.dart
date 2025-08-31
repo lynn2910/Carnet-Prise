@@ -70,6 +70,7 @@ class _EditSessionScreenState extends State<EditSessionScreen> {
       initialDate: isStartDate ? _selectedDateDebut : _selectedDateFin,
       firstDate: DateTime(2000),
       lastDate: DateTime(2101),
+      locale: const Locale('fr', 'FR'),
     );
 
     if (!mounted) return;

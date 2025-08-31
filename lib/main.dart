@@ -5,6 +5,7 @@ import 'package:carnet_prise/repositories/isar_service.dart';
 import 'package:carnet_prise/repositories/theme_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 
 void main() {
@@ -59,6 +60,12 @@ class App extends StatelessWidget {
       darkTheme: themeManager.darkTheme(),
       themeMode: themeManager.themeMode,
       locale: const Locale("fr"),
+      supportedLocales: const [Locale('fr', 'FR')],
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
     );
   }
 }

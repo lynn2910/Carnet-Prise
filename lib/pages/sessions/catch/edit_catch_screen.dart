@@ -130,6 +130,7 @@ class _EditCatchScreenState extends State<EditCatchScreen> {
       initialDate: _catchDate,
       firstDate: DateTime(2000),
       lastDate: DateTime.now(),
+      locale: const Locale('fr', 'FR'),
     );
     if (pickedDate != null) {
       if (!context.mounted) return;

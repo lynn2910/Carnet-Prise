@@ -48,6 +48,7 @@ class _AddSessionScreenState extends State<AddSessionScreen> {
       initialDate: DateTime.now(),
       firstDate: DateTime(2000),
       lastDate: DateTime(2101),
+      locale: const Locale('fr', 'FR'),
     );
 
     if (!mounted) return;
