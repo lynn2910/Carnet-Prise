@@ -52,11 +52,15 @@ class _EditSessionScreenState extends State<EditSessionScreen> {
 
       if (session != null) {
         _locationController.text = session.spotName!;
-        _startDateController.text = _formatDate(session.startDate!);
-        _endDateController.text = _formatDate(session.endDate!);
+        _startDateController.text = session.startDate != null
+            ? _formatDate(session.startDate!)
+            : '';
+        _endDateController.text = session.endDate != null
+            ? _formatDate(session.endDate!)
+            : '';
 
-        _selectedDateDebut = session.startDate!;
-        _selectedDateFin = session.endDate!;
+        _selectedDateDebut = session.startDate;
+        _selectedDateFin = session.endDate;
       }
     });
   }

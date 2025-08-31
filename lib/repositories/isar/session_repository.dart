@@ -126,6 +126,7 @@ class SessionRepository {
           final existingFisherman = session.fishermen[existingFishermanIndex];
           existingFisherman.spotNumber = fisherman.spotNumber;
           existingFisherman.name = newFishermanName;
+          existingFisherman.colorSeed = fisherman.colorSeed;
         } else {
           // Add a new fisherman
           final updatedFishermen = [...session.fishermen, fisherman];

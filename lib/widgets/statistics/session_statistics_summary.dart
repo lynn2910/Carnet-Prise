@@ -15,9 +15,6 @@ class SessionStatisticsSummary extends StatefulWidget {
 }
 
 class _SessionStatisticsSummaryState extends State<SessionStatisticsSummary> {
-  final Map<int, int> _accidentsCounts = {};
-  int _totalAccidentsCount = 0;
-
   final Map<String, int> _fishes = {};
   int _totalFishesCount = 0;
 
@@ -110,7 +107,6 @@ class _SessionStatisticsSummaryState extends State<SessionStatisticsSummary> {
       if (widget.session?.fishermen == null) return;
 
       _fishes.clear();
-      _totalAccidentsCount = 0;
       _totalFishesCount = 0;
 
       for (var fisherman in widget.session!.fishermen) {
@@ -289,7 +285,7 @@ class _SessionStatisticsSummaryState extends State<SessionStatisticsSummary> {
           ],
 
           // Message si aucune donnée
-          if (_totalFishesCount == 0 && _totalAccidentsCount == 0) ...[
+          if (_totalFishesCount == 0) ...[
             const Center(
               child: Padding(
                 padding: EdgeInsets.all(32.0),
