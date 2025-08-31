@@ -189,14 +189,14 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      "Participants",
-                      style: theme.textTheme.titleLarge!.copyWith(
-                        fontWeight: FontWeight.bold,
+                    InkWell(
+                      child: Text(
+                        "Participants",
+                        style: theme.textTheme.titleLarge!.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                    IconButton(
-                      onPressed: () {
+                      onTap: () {
                         context
                             .pushNamed(
                               "add_fisherman",
@@ -208,7 +208,6 @@ class _SessionDetailsScreenState extends State<SessionDetailsScreen> {
                               _loadSessionDetails();
                             });
                       },
-                      icon: Icon(Icons.add),
                     ),
                   ],
                 ),

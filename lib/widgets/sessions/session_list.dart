@@ -1,7 +1,6 @@
 import 'package:carnet_prise/models/session.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:go_router/go_router.dart';
 
 class SessionList extends StatefulWidget {
   final List<Session> sessions;

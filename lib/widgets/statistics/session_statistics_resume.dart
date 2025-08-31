@@ -89,7 +89,6 @@ class _SessionStatisticsResumeState extends State<SessionStatisticsResume> {
         );
       }).toList();
     } catch (e) {
-      print('Erreur lors de la génération du graphique: $e');
       return [
         PieChartSectionData(
           color: Colors.red,
@@ -146,7 +145,6 @@ class _SessionStatisticsResumeState extends State<SessionStatisticsResume> {
         }
       }
     } catch (e) {
-      print('Erreur lors de la préparation des statistiques: $e');
       setState(() {
         _errorMessage = 'Erreur lors du chargement des statistiques: $e';
       });
@@ -162,7 +160,6 @@ class _SessionStatisticsResumeState extends State<SessionStatisticsResume> {
         _finishedLoading = true;
       });
     } catch (e) {
-      print('Erreur dans didChangeDependencies: $e');
       setState(() {
         _errorMessage = 'Erreur lors de l\'initialisation: $e';
         _finishedLoading = true;
@@ -180,14 +177,20 @@ class _SessionStatisticsResumeState extends State<SessionStatisticsResume> {
           children: [
             const Icon(Icons.error, color: Colors.red, size: 48),
             const SizedBox(height: 16),
-            Text('Erreur', style: Theme.of(context).textTheme.headlineSmall),
+            Text('Erreur', style: Theme
+                .of(context)
+                .textTheme
+                .headlineSmall),
             const SizedBox(height: 8),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Text(
                 _errorMessage!,
                 textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.bodyMedium,
+                style: Theme
+                    .of(context)
+                    .textTheme
+                    .bodyMedium,
               ),
             ),
           ],
@@ -232,18 +235,19 @@ class _SessionStatisticsResumeState extends State<SessionStatisticsResume> {
                 ),
               ),
             ),
-          ] else ...[
-            Container(
-              height: 200,
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey),
-                borderRadius: BorderRadius.circular(8),
+          ] else
+            ...[
+              Container(
+                height: 200,
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Center(
+                  child: Text('Aucun poisson capturé dans cette session'),
+                ),
               ),
-              child: const Center(
-                child: Text('Aucun poisson capturé dans cette session'),
-              ),
-            ),
-          ],
+            ],
 
           const SizedBox(height: 30),
 
