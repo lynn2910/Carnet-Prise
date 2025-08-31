@@ -1,6 +1,6 @@
 import 'package:carnet_prise/models/session.dart';
 import 'package:carnet_prise/widgets/statistics/session_statistics_fishermans.dart';
-import 'package:carnet_prise/widgets/statistics/session_statistics_resume.dart';
+import 'package:carnet_prise/widgets/statistics/session_statistics_summary.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -106,7 +106,7 @@ class _SingleSessionStatisticsState extends State<SingleSessionStatistics> {
         ),
         body: TabBarView(
           children: [
-            SessionStatisticsResume(session: _session),
+            SessionStatisticsSummary(session: _session),
             SessionStatisticsFisherman(session: _session),
           ],
         ),
