@@ -88,7 +88,7 @@ class _SessionListState extends State<SessionList> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            session.spotName ?? "Lieu inconnu",
+                            _formatDate(session).capitalize(),
                             style: const TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
@@ -96,7 +96,7 @@ class _SessionListState extends State<SessionList> {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            _formatDate(session),
+                            session.spotName ?? "Lieu inconnu",
                             style: TextStyle(fontSize: 14),
                           ),
                         ],
@@ -112,5 +112,14 @@ class _SessionListState extends State<SessionList> {
         );
       },
     );
+  }
+}
+
+extension on String {
+  String capitalize() {
+    if (isEmpty) {
+      return this;
+    }
+    return this[0].toUpperCase() + substring(1);
   }
 }
