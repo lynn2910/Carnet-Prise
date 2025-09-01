@@ -1,5 +1,6 @@
 import 'package:carnet_prise/models/fisherman.dart';
 import 'package:carnet_prise/repositories/isar/session_repository.dart';
+import 'package:carnet_prise/widgets/fisherman/fisherman_color_selector.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -21,6 +22,7 @@ class _AddFishermanScreenState extends State<AddFishermanScreen> {
 
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _posteController = TextEditingController();
+  Color? _color;
 
   void _submitForm() async {
     if (_formKey.currentState!.validate()) {
@@ -29,6 +31,7 @@ class _AddFishermanScreenState extends State<AddFishermanScreen> {
 
       final newFisherman = Fisherman()
         ..name = name
+        ..colorSeed = _color?.toARGB32()
         ..spotNumber = poste;
 
       if (_sessionRepository == null) {
@@ -155,6 +158,20 @@ class _AddFishermanScreenState extends State<AddFishermanScreen> {
                             return null;
                           },
                         ),
+                      ),
+                      Text(
+                        "Couleur du pêcheur",
+                        style: theme.textTheme.titleLarge!.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      FishermanColorSelect(
+                        onChange: (color) {
+                          setState(() {
+                            _color = color;
+                          });
+                        },
+                        actualColor: _color,
                       ),
                     ],
                   ),

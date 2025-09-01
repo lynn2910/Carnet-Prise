@@ -1,5 +1,6 @@
 import 'package:carnet_prise/models/fisherman.dart';
 import 'package:carnet_prise/repositories/isar/session_repository.dart';
+import 'package:carnet_prise/widgets/fisherman/fisherman_color_selector.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -29,6 +30,7 @@ class _EditFishermanScreenState extends State<EditFishermanScreen> {
 
   Fisherman? _existingFisherman;
   String? _oldName;
+  Color? _color;
 
   void _submitForm() async {
     if (_formKey.currentState!.validate()) {
@@ -37,7 +39,8 @@ class _EditFishermanScreenState extends State<EditFishermanScreen> {
 
       _existingFisherman!
         ..name = name
-        ..spotNumber = poste;
+        ..spotNumber = poste
+        ..colorSeed = _color?.toARGB32();
 
       if (_sessionRepository == null) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -106,6 +109,12 @@ class _EditFishermanScreenState extends State<EditFishermanScreen> {
 
       if (fisherman != null) {
         _oldName = _existingFisherman!.name!;
+
+        if (fisherman.colorSeed != null) {
+          _color = Color(fisherman.colorSeed!);
+        } else {
+          _color = null;
+        }
 
         _nameController.text = _existingFisherman!.name!;
         _posteController.text = _existingFisherman!.spotNumber!;
@@ -184,6 +193,22 @@ class _EditFishermanScreenState extends State<EditFishermanScreen> {
                                   return null;
                                 },
                               ),
+                            ),
+
+                            // Color
+                            Text(
+                              "Couleur du pêcheur",
+                              style: theme.textTheme.titleLarge!.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            FishermanColorSelect(
+                              actualColor: _color,
+                              onChange: (color) {
+                                setState(() {
+                                  _color = color;
+                                });
+                              },
                             ),
                           ],
                         ),

@@ -4,20 +4,17 @@ import 'package:flutter/material.dart';
 import '../../models/catch.dart';
 import '../../models/session.dart';
 
-class SessionStatisticsResume extends StatefulWidget {
+class SessionStatisticsSummary extends StatefulWidget {
   final Session? session;
 
-  const SessionStatisticsResume({super.key, required this.session});
+  const SessionStatisticsSummary({super.key, required this.session});
 
   @override
-  State<SessionStatisticsResume> createState() =>
-      _SessionStatisticsResumeState();
+  State<SessionStatisticsSummary> createState() =>
+      _SessionStatisticsSummaryState();
 }
 
-class _SessionStatisticsResumeState extends State<SessionStatisticsResume> {
-  final Map<int, int> _accidentsCounts = {};
-  int _totalAccidentsCount = 0;
-
+class _SessionStatisticsSummaryState extends State<SessionStatisticsSummary> {
   final Map<String, int> _fishes = {};
   int _totalFishesCount = 0;
 
@@ -31,26 +28,26 @@ class _SessionStatisticsResumeState extends State<SessionStatisticsResume> {
       if (widget.session?.fishermen != null) {
         for (var fisherman in widget.session!.fishermen) {
           for (var catchData in fisherman.catches) {
-            if (catchData.accident == null ||
-                catchData.accident == Accident.none) {
-              String fishName;
+            String fishName;
 
-              if (catchData.fishType == FishType.carp) {
-                fishName = 'Carpe';
-              } else if (catchData.fishType == FishType.other) {
-                fishName = catchData.otherFishType ?? 'Autre';
-              } else if (catchData.fishType != null) {
-                try {
-                  fishName = getFishTypeName(catchData.fishType!);
-                } catch (e) {
-                  fishName = catchData.otherFishType ?? 'Inconnu';
-                }
-              } else {
+            if (catchData.accident != null &&
+                catchData.accident != Accident.none) {
+              fishName = getAccidentName(catchData.accident!);
+            } else if (catchData.fishType == FishType.carp) {
+              fishName = 'Carpe';
+            } else if (catchData.fishType == FishType.other) {
+              fishName = catchData.otherFishType ?? 'Autre';
+            } else if (catchData.fishType != null) {
+              try {
+                fishName = getFishTypeName(catchData.fishType!);
+              } catch (e) {
                 fishName = catchData.otherFishType ?? 'Inconnu';
               }
-
-              fishCounts[fishName] = (fishCounts[fishName] ?? 0) + 1;
+            } else {
+              fishName = catchData.otherFishType ?? 'Inconnu';
             }
+
+            fishCounts[fishName] = (fishCounts[fishName] ?? 0) + 1;
           }
         }
       }
@@ -109,39 +106,32 @@ class _SessionStatisticsResumeState extends State<SessionStatisticsResume> {
     try {
       if (widget.session?.fishermen == null) return;
 
-      _accidentsCounts.clear();
       _fishes.clear();
-      _totalAccidentsCount = 0;
       _totalFishesCount = 0;
 
       for (var fisherman in widget.session!.fishermen) {
         for (var catchItem in fisherman.catches) {
+          String name;
+
           if (catchItem.accident != null &&
               catchItem.accident != Accident.none) {
-            _totalAccidentsCount++;
-            int hashCode = catchItem.accident!.hashCode;
-            _accidentsCounts[hashCode] = (_accidentsCounts[hashCode] ?? 0) + 1;
-          } else {
-            // Normal fish
-            String name;
-
-            if (catchItem.fishType == FishType.carp) {
-              name = 'Carpe';
-            } else if (catchItem.fishType == FishType.other) {
-              name = catchItem.otherFishType ?? 'Autre';
-            } else if (catchItem.fishType != null) {
-              try {
-                name = getFishTypeName(catchItem.fishType!);
-              } catch (e) {
-                name = catchItem.otherFishType ?? 'Inconnu';
-              }
-            } else {
+            name = getAccidentName(catchItem.accident!);
+          } else if (catchItem.fishType == FishType.carp) {
+            name = 'Carpe';
+          } else if (catchItem.fishType == FishType.other) {
+            name = catchItem.otherFishType ?? 'Autre';
+          } else if (catchItem.fishType != null) {
+            try {
+              name = getFishTypeName(catchItem.fishType!);
+            } catch (e) {
               name = catchItem.otherFishType ?? 'Inconnu';
             }
-
-            _totalFishesCount++;
-            _fishes[name] = (_fishes[name] ?? 0) + 1;
+          } else {
+            name = catchItem.otherFishType ?? 'Inconnu';
           }
+
+          _totalFishesCount++;
+          _fishes[name] = (_fishes[name] ?? 0) + 1;
         }
       }
     } catch (e) {
@@ -177,20 +167,14 @@ class _SessionStatisticsResumeState extends State<SessionStatisticsResume> {
           children: [
             const Icon(Icons.error, color: Colors.red, size: 48),
             const SizedBox(height: 16),
-            Text('Erreur', style: Theme
-                .of(context)
-                .textTheme
-                .headlineSmall),
+            Text('Erreur', style: Theme.of(context).textTheme.headlineSmall),
             const SizedBox(height: 8),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Text(
                 _errorMessage!,
                 textAlign: TextAlign.center,
-                style: Theme
-                    .of(context)
-                    .textTheme
-                    .bodyMedium,
+                style: Theme.of(context).textTheme.bodyMedium,
               ),
             ),
           ],
@@ -235,80 +219,27 @@ class _SessionStatisticsResumeState extends State<SessionStatisticsResume> {
                 ),
               ),
             ),
-          ] else
-            ...[
-              Container(
-                height: 200,
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: const Center(
-                  child: Text('Aucun poisson capturé dans cette session'),
-                ),
+          ] else ...[
+            Container(
+              height: 200,
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey),
+                borderRadius: BorderRadius.circular(8),
               ),
-            ],
-
-          const SizedBox(height: 30),
-
-          // Accidents section
-          if (_totalAccidentsCount > 0) ...[
-            Padding(
-              padding: const EdgeInsets.only(top: 8.0, bottom: 8.0, left: 16.0),
-              child: Text(
-                "Accidents",
-                style: theme.textTheme.titleLarge!.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+              child: const Center(
+                child: Text('Aucun poisson capturé dans cette session'),
               ),
             ),
-
-            ...Accident.values.where((a) => a != Accident.none).map((accident) {
-              final accidentCount = _accidentsCounts[accident.hashCode] ?? 0;
-              if (accidentCount == 0) return const SizedBox.shrink();
-
-              final accidentPercentage = _totalAccidentsCount > 0
-                  ? (accidentCount / _totalAccidentsCount * 100).toInt()
-                  : 0;
-
-              return Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 10,
-                ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        getAccidentName(accident),
-                        style: theme.textTheme.titleMedium!.copyWith(
-                          fontWeight: FontWeight.normal,
-                          color: theme.colorScheme.onSurface,
-                        ),
-                      ),
-                    ),
-                    Text(
-                      "$accidentCount ($accidentPercentage%)",
-                      style: theme.textTheme.labelLarge!.copyWith(
-                        fontWeight: FontWeight.normal,
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            }),
-
-            const Divider(thickness: 2),
           ],
+
+          const SizedBox(height: 30),
 
           // Fishes section
           if (_totalFishesCount > 0) ...[
             Padding(
               padding: const EdgeInsets.only(top: 8.0, bottom: 8.0, left: 16.0),
               child: Text(
-                "Poissons",
+                "Prises",
                 style: theme.textTheme.titleLarge!.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
@@ -354,7 +285,7 @@ class _SessionStatisticsResumeState extends State<SessionStatisticsResume> {
           ],
 
           // Message si aucune donnée
-          if (_totalFishesCount == 0 && _totalAccidentsCount == 0) ...[
+          if (_totalFishesCount == 0) ...[
             const Center(
               child: Padding(
                 padding: EdgeInsets.all(32.0),

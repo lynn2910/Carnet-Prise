@@ -17,6 +17,16 @@ class SessionList extends StatefulWidget {
 }
 
 class _SessionListState extends State<SessionList> {
+  String _formatDate(Session session) {
+    if (session.startDate == null || session.endDate == null) return "";
+
+    if (session.startDate!.month == session.endDate!.month) {
+      return DateFormat("MMM yyyy", 'fr-FR').format(session.startDate!);
+    } else {
+      return "${DateFormat("MMM yyyy", 'fr-FR').format(session.startDate!)} - ${DateFormat("MMM yyyy", 'fr-FR').format(session.endDate!)}";
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     if (widget.sessions.isEmpty) {
@@ -78,7 +88,7 @@ class _SessionListState extends State<SessionList> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            session.spotName ?? "Lieu inconnu",
+                            _formatDate(session).capitalize(),
                             style: const TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
@@ -86,9 +96,7 @@ class _SessionListState extends State<SessionList> {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            session.startDate != null && session.endDate != null
-                                ? "${DateFormat("d/MM/y").format(session.startDate!)} - ${DateFormat("d/MM/y").format(session.endDate!)}"
-                                : "",
+                            session.spotName ?? "Lieu inconnu",
                             style: TextStyle(fontSize: 14),
                           ),
                         ],
@@ -104,5 +112,14 @@ class _SessionListState extends State<SessionList> {
         );
       },
     );
+  }
+}
+
+extension on String {
+  String capitalize() {
+    if (isEmpty) {
+      return this;
+    }
+    return this[0].toUpperCase() + substring(1);
   }
 }

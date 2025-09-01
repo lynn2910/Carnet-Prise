@@ -286,6 +286,40 @@ class _CatchDetailsState extends State<CatchDetails> {
             ),
             Divider(height: 1, color: theme.colorScheme.outlineVariant),
 
+            if (catchItem.annotations != null)
+              Column(
+                children: [
+                  const SizedBox(height: 8),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 8,
+                      horizontal: 4,
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            "Annotation",
+                            style: theme.textTheme.titleMedium!,
+                          ),
+                        ),
+
+                        const SizedBox(width: 10),
+
+                        Text(
+                          catchItem.annotations!,
+                          style: theme.textTheme.labelLarge!.copyWith(
+                            fontWeight: FontWeight.normal,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Divider(height: 1, color: theme.colorScheme.outlineVariant),
+                  const SizedBox(height: 8),
+                ],
+              ),
+
             const SizedBox(height: 8),
 
             //
@@ -476,14 +510,7 @@ class _CatchDetailsState extends State<CatchDetails> {
 }
 
 String formatAccident(Accident accident) {
-  switch (accident) {
-    case Accident.lineBreak:
-      return "ligne cassée";
-    case Accident.snaggedLine:
-      return "décroché";
-    case Accident.none:
-      return "?";
-  }
+  return getAccidentName(accident);
 }
 
 String formatDate(DateTime date) {

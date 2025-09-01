@@ -36,6 +36,7 @@ class _AddCatchScreenState extends State<AddCatchScreen> {
   final TextEditingController _weightController = TextEditingController();
   DateTime _catchDate = DateTime.now();
   Accident? _selectedAccident = Accident.none;
+  String? _annotation;
 
   List<String> _autocompleteOptions = [];
   List<Fisherman> _allFishermen = [];
@@ -105,18 +106,7 @@ class _AddCatchScreenState extends State<AddCatchScreen> {
 
   List<DropdownMenuItem<Accident>> _getAccidentDropdownItems() {
     return Accident.values.map((accident) {
-      String text;
-      switch (accident) {
-        case Accident.snaggedLine:
-          text = 'Décrochage';
-          break;
-        case Accident.lineBreak:
-          text = 'Ligne cassée';
-          break;
-        case Accident.none:
-          text = 'Aucun accident';
-          break;
-      }
+      String text = getAccidentName(accident);
       return DropdownMenuItem(value: accident, child: Text(text));
     }).toList();
   }
@@ -127,6 +117,7 @@ class _AddCatchScreenState extends State<AddCatchScreen> {
       initialDate: _catchDate,
       firstDate: DateTime(2000),
       lastDate: DateTime.now(),
+      locale: const Locale('fr', 'FR'),
     );
     if (pickedDate != null) {
       if (!context.mounted) return;
@@ -185,6 +176,7 @@ class _AddCatchScreenState extends State<AddCatchScreen> {
       final newCatch = Catch();
       newCatch.catchDate = _catchDate;
       newCatch.accident = _selectedAccident;
+      newCatch.annotations = _annotation;
 
       // Assigner les liens
       newCatch.fishermenName = _selectedFisherman!.name!;
@@ -273,6 +265,7 @@ class _AddCatchScreenState extends State<AddCatchScreen> {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
+
                       const SizedBox(height: 16),
                       // Champ de sélection du pêcheur
                       DropdownButtonFormField<Fisherman>(
@@ -315,6 +308,7 @@ class _AddCatchScreenState extends State<AddCatchScreen> {
                           ),
                         ),
                       ),
+
                       const SizedBox(height: 32),
                       const Text(
                         'Poisson',
@@ -324,6 +318,7 @@ class _AddCatchScreenState extends State<AddCatchScreen> {
                         ),
                       ),
                       const SizedBox(height: 16),
+
                       // Champ Poids du poisson
                       TextFormField(
                         controller: _weightController,
@@ -473,6 +468,30 @@ class _AddCatchScreenState extends State<AddCatchScreen> {
                           return null;
                         },
                       ),
+
+                      const SizedBox(height: 32),
+                      const Text(
+                        'Informations supplémentaires',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      TextField(
+                        maxLines: null,
+                        onChanged: (newAnnotation) {
+                          setState(() {
+                            _annotation = newAnnotation;
+                          });
+                        },
+                        decoration: InputDecoration(
+                          suffixIcon: Icon(Icons.clear),
+                          labelText: 'Annotation',
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
                     ],
                   ),
                 ),
