@@ -16,12 +16,10 @@ class Catch {
   Accident? accident;
 
   String? otherFishType;
-
   double? weight;
-
   String? fishermenName;
-
   DateTime? catchDate;
+  String? annotations;
 
   final session = IsarLink<Session>();
 
@@ -41,13 +39,17 @@ class Catch {
         case Accident.snaggedLine:
           text += "a eu une touche, qui a malheureusement décroché";
         default:
-          throw UnimplementedError("You should have this value");
+          throw UnimplementedError("You shouldn't have this value");
       }
     }
     text += " le ";
     text += DateFormat("dd/MM/y à HH:mm").format(catchDate!);
     if (spotNumber != null) {
       text += " au poste $spotNumber";
+    }
+
+    if (annotations != null) {
+      text += "(notes: $annotations)";
     }
     return text;
   }
@@ -81,6 +83,7 @@ class Catch {
       'weight': weight,
       'fishermenName': fishermenName,
       'catchDate': catchDate?.toIso8601String(),
+      'annotations': annotations,
     };
   }
 
@@ -93,6 +96,7 @@ class Catch {
       ..accident = json['accident'] != null
           ? Accident.values.byName(json['accident'])
           : null
+      ..annotations = json['annotations'] as String?
       ..otherFishType = json['otherFishType'] as String?
       ..weight = json['weight'] as double?
       ..fishermenName = json['fishermenName'] as String?
@@ -114,9 +118,7 @@ enum Accident {
 String getAccidentName(Accident accident) {
   switch (accident) {
     case Accident.snaggedLine:
-      {
-        return "Décrochage";
-      }
+      return "Décrochage";
     case Accident.lineBreak:
       return "Cassée";
     default:

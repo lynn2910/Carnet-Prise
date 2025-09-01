@@ -34,6 +34,7 @@ class _EditCatchScreenState extends State<EditCatchScreen> {
   final TextEditingController _weightController = TextEditingController();
   DateTime _catchDate = DateTime.now();
   Accident? _selectedAccident = Accident.none;
+  String? _annotation;
 
   List<String> _autocompleteOptions = [];
   List<Fisherman> _allFishermen = [];
@@ -69,6 +70,7 @@ class _EditCatchScreenState extends State<EditCatchScreen> {
     setState(() {
       _catchDate = _existingCatch!.catchDate!;
       _selectedAccident = _existingCatch!.accident;
+      _annotation = _existingCatch?.annotations;
       _fishTypeController.text = getCatchType(_existingCatch!);
       if (_existingCatch!.weight != null) {
         _weightController.text = _existingCatch!.weight.toString();
@@ -178,6 +180,7 @@ class _EditCatchScreenState extends State<EditCatchScreen> {
       final updatedCatch = _existingCatch!;
       updatedCatch.catchDate = _catchDate;
       updatedCatch.accident = _selectedAccident;
+      updatedCatch.annotations = _annotation;
 
       // Assigner les liens
       updatedCatch.fishermenName = _selectedFisherman!.name!;
@@ -483,6 +486,29 @@ class _EditCatchScreenState extends State<EditCatchScreen> {
                                 return null;
                               },
                             ),
+                            const SizedBox(height: 32),
+                            const Text(
+                              'Informations supplémentaires',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            TextField(
+                              maxLines: null,
+                              onChanged: (newAnnotation) {
+                                setState(() {
+                                  _annotation = newAnnotation;
+                                });
+                              },
+                              decoration: InputDecoration(
+                                suffixIcon: Icon(Icons.clear),
+                                labelText: 'Annotation',
+                                border: OutlineInputBorder(),
+                              ),
+                            ),
+                            const SizedBox(height: 16),
                           ],
                         ),
                       ),
