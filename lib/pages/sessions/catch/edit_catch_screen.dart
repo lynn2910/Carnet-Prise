@@ -32,9 +32,10 @@ class _EditCatchScreenState extends State<EditCatchScreen> {
 
   final TextEditingController _fishTypeController = TextEditingController();
   final TextEditingController _weightController = TextEditingController();
+  final TextEditingController _annotationController = TextEditingController();
+
   DateTime _catchDate = DateTime.now();
   Accident? _selectedAccident = Accident.none;
-  String? _annotation;
 
   List<String> _autocompleteOptions = [];
   List<Fisherman> _allFishermen = [];
@@ -70,7 +71,7 @@ class _EditCatchScreenState extends State<EditCatchScreen> {
     setState(() {
       _catchDate = _existingCatch!.catchDate!;
       _selectedAccident = _existingCatch!.accident;
-      _annotation = _existingCatch?.annotations;
+      _annotationController.text = _existingCatch?.annotations ?? '';
       _fishTypeController.text = getCatchType(_existingCatch!);
       if (_existingCatch!.weight != null) {
         _weightController.text = _existingCatch!.weight.toString();
@@ -180,7 +181,11 @@ class _EditCatchScreenState extends State<EditCatchScreen> {
       final updatedCatch = _existingCatch!;
       updatedCatch.catchDate = _catchDate;
       updatedCatch.accident = _selectedAccident;
-      updatedCatch.annotations = _annotation;
+      if (_annotationController.text.isNotEmpty) {
+        updatedCatch.annotations = _annotationController.text;
+      } else {
+        updatedCatch.annotations = null;
+      }
 
       // Assigner les liens
       updatedCatch.fishermenName = _selectedFisherman!.name!;
@@ -496,14 +501,15 @@ class _EditCatchScreenState extends State<EditCatchScreen> {
                             ),
                             const SizedBox(height: 16),
                             TextField(
+                              controller: _annotationController,
                               maxLines: null,
-                              onChanged: (newAnnotation) {
-                                setState(() {
-                                  _annotation = newAnnotation;
-                                });
-                              },
                               decoration: InputDecoration(
-                                suffixIcon: Icon(Icons.clear),
+                                suffixIcon: IconButton(
+                                  icon: Icon(Icons.clear),
+                                  onPressed: () {
+                                    _annotationController.clear();
+                                  },
+                                ),
                                 labelText: 'Annotation',
                                 border: OutlineInputBorder(),
                               ),

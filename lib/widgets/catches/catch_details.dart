@@ -286,7 +286,8 @@ class _CatchDetailsState extends State<CatchDetails> {
             ),
             Divider(height: 1, color: theme.colorScheme.outlineVariant),
 
-            if (catchItem.annotations != null)
+            if (catchItem.annotations != null &&
+                catchItem.annotations!.isNotEmpty)
               Column(
                 children: [
                   const SizedBox(height: 8),
