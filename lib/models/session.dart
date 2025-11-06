@@ -1,9 +1,8 @@
 import 'package:isar/isar.dart';
+import 'fisherman.dart';
 import 'package:uuid/uuid.dart';
 
-import 'fisherman.dart';
-
-part "session.g.dart";
+part 'session.g.dart';
 
 @collection
 class Session {
@@ -17,11 +16,13 @@ class Session {
 
   DateTime? startDate;
   DateTime? endDate;
+  DateTime? lastModified;
 
   List<Fisherman> fishermen = <Fisherman>[];
 
   Session() {
     uuid = const Uuid().v4();
+    lastModified = DateTime.now();
   }
 
   Map<String, dynamic> toJson() {
@@ -31,6 +32,7 @@ class Session {
       'spotName': spotName,
       'startDate': startDate?.toIso8601String(),
       'endDate': endDate?.toIso8601String(),
+      'lastModified': lastModified?.toIso8601String(),
       'fishermen': fishermen.map((f) => f.toJson()).toList(),
     };
   }
@@ -45,6 +47,9 @@ class Session {
           : null
       ..endDate = json['endDate'] != null
           ? DateTime.parse(json['endDate'])
+          : null
+      ..lastModified = json['lastModified'] != null
+          ? DateTime.parse(json['lastModified'])
           : null
       ..fishermen =
           (json['fishermen'] as List<dynamic>?)

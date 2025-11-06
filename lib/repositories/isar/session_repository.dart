@@ -76,6 +76,7 @@ class SessionRepository {
           await isar.sessions.get(session.id) == null) {
         return false;
       }
+      session.lastModified = DateTime.now();
       return await isar.sessions.put(session) != 0;
     });
   }
@@ -149,6 +150,7 @@ class SessionRepository {
           await isar.catchs.putAll(catchesToUpdate);
         }
 
+        session.lastModified = DateTime.now();
         await isar.sessions.put(session);
       }
     });
