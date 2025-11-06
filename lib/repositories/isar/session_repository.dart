@@ -175,6 +175,7 @@ class SessionRepository {
             )
             .toList();
 
+        session.lastModified = DateTime.now();
         await isar.sessions.put(session);
       }
     });
