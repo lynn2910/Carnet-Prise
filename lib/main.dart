@@ -1,5 +1,6 @@
 import 'package:carnet_prise/repositories/isar/catch_repository.dart';
 import 'package:carnet_prise/repositories/isar/session_repository.dart';
+import 'package:carnet_prise/repositories/uuid_migration.dart';
 import 'package:carnet_prise/router.dart';
 import 'package:carnet_prise/repositories/isar_service.dart';
 import 'package:carnet_prise/repositories/theme_manager.dart';
@@ -8,10 +9,11 @@ import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   final isarService = IsarService();
+  await migrateAllToUUID(isarService);
 
   runApp(
     MultiProvider(

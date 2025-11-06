@@ -262,16 +262,14 @@ Future<void> _mergeCatches(
 
   final existingCatchesMap = <String, Catch>{};
   for (final catch_ in existingCatches) {
-    final key = _getCatchKey(catch_);
-    existingCatchesMap[key] = catch_;
+    existingCatchesMap[catch_.uuid] = catch_;
   }
 
   for (final catchJson in importedCatchesJson) {
     final importedCatch = Catch.fromJson(catchJson);
-    final key = _getCatchKey(importedCatch);
 
-    if (existingCatchesMap.containsKey(key)) {
-      final existingCatch = existingCatchesMap[key]!;
+    if (existingCatchesMap.containsKey(importedCatch.uuid)) {
+      final existingCatch = existingCatchesMap[importedCatch.uuid]!;
 
       switch (strategy) {
         case MergeStrategy.keepNewer:
@@ -285,8 +283,22 @@ Future<void> _mergeCatches(
             needsUpdate = true;
           }
 
-          if (importedCatch.weight != null && existingCatch.weight == null) {
+          if (importedCatch.weight != null &&
+              (existingCatch.weight == null ||
+                  importedCatch.weight != existingCatch.weight)) {
             existingCatch.weight = importedCatch.weight;
+            needsUpdate = true;
+          }
+
+          if (importedCatch.fishType != null &&
+              existingCatch.fishType == null) {
+            existingCatch.fishType = importedCatch.fishType;
+            needsUpdate = true;
+          }
+
+          if (importedCatch.otherFishType != null &&
+              existingCatch.otherFishType == null) {
+            existingCatch.otherFishType = importedCatch.otherFishType;
             needsUpdate = true;
           }
 
@@ -304,6 +316,8 @@ Future<void> _mergeCatches(
           existingCatch.otherFishType = importedCatch.otherFishType;
           existingCatch.weight = importedCatch.weight;
           existingCatch.annotations = importedCatch.annotations;
+          existingCatch.fishermenName = importedCatch.fishermenName;
+          existingCatch.catchDate = importedCatch.catchDate;
           await isar.catchs.put(existingCatch);
           break;
       }
@@ -314,16 +328,6 @@ Future<void> _mergeCatches(
       await importedCatch.session.save();
     }
   }
-}
-
-String _getCatchKey(Catch catch_) {
-  final date = catch_.catchDate?.toIso8601String() ?? '';
-  final fisherman = catch_.fishermenName ?? '';
-  final fishType = catch_.fishType?.name ?? '';
-  final accident = catch_.accident?.name ?? '';
-  final weight = catch_.weight?.toString() ?? '';
-
-  return '$date|$fisherman|$fishType|$accident|$weight';
 }
 
 enum MergeStrategy { keepNewer, keepExisting, overwrite }

@@ -125,22 +125,6 @@ Future<void> importData({required bool replaceExisting}) async {
   });
 }
 
-Future<void> migrateSessionsToUUID(IsarService isarService) async {
-  final isar = await isarService.db;
-
-  await isar.writeTxn(() async {
-    final sessions = await isar.sessions.where().findAll();
-
-    for (final session in sessions) {
-      // Si la session n'as pas une UUID
-      if (session.uuid.isEmpty) {
-        session.uuid = const Uuid().v4();
-        await isar.sessions.put(session);
-      }
-    }
-  });
-}
-
 Future<void> cleanDatabase(
   IsarService isarService, {
   bool? resetPreferences = false,
