@@ -243,6 +243,7 @@ class _EditCatchScreenState extends State<EditCatchScreen> {
   void dispose() {
     _fishTypeController.dispose();
     _weightController.dispose();
+    _annotationController.dispose();
     super.dispose();
   }
 
@@ -400,9 +401,28 @@ class _EditCatchScreenState extends State<EditCatchScreen> {
                                       focusNode: fieldFocusNode,
                                       enabled:
                                           _selectedAccident == Accident.none,
-                                      decoration: const InputDecoration(
+                                      decoration: InputDecoration(
                                         labelText: 'Type de poisson',
-                                        border: OutlineInputBorder(),
+                                        border: const OutlineInputBorder(),
+                                        suffixIcon: IconButton(
+                                          icon: const Icon(Icons.close),
+                                          onPressed:
+                                              _selectedAccident == Accident.none
+                                              ? () {
+                                                  fieldTextEditingController
+                                                      .clear();
+                                                  _fishTypeController.clear();
+
+                                                  setState(() {
+                                                    _fishTypeController.text =
+                                                        '';
+                                                    fieldTextEditingController
+                                                            .text =
+                                                        '';
+                                                  });
+                                                }
+                                              : null,
+                                        ),
                                       ),
                                       validator: (value) {
                                         if (_selectedAccident ==
