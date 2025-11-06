@@ -6,14 +6,10 @@ import 'package:file_picker/file_picker.dart';
 import 'package:isar/isar.dart';
 
 import '../models/catch.dart';
-import '../models/fisherman.dart';
 import 'clean.dart';
 import 'isar_service.dart';
 
-Future<void> importData({
-  required bool replaceExisting,
-  MergeStrategy mergeStrategy = MergeStrategy.keepNewer,
-}) async {
+Future<void> importData({required bool replaceExisting}) async {
   final isarService = IsarService();
   final isar = await isarService.db;
 
@@ -46,12 +42,11 @@ Future<void> importData({
           .findFirst();
 
       if (existingSession != null && !replaceExisting) {
-        await _mergeSession(
+        await _overwriteSession(
           isar,
           existingSession,
           importedSession,
           sessionJson,
-          mergeStrategy,
         );
       } else {
         importedSession.id = Isar.autoIncrement;
@@ -70,255 +65,40 @@ Future<void> importData({
   });
 }
 
-// Future<void> _mergeSession(
-//   Isar isar,
-//   Session existingSession,
-//   Session importedSession,
-//   Map<String, dynamic> sessionJson,
-//   MergeStrategy strategy,
-// ) async {
-//   bool sessionUpdated = false;
-//
-//   switch (strategy) {
-//     case MergeStrategy.keepNewer:
-//       final existingDate = existingSession.endDate ?? existingSession.startDate;
-//       final importedDate = importedSession.endDate ?? importedSession.startDate;
-//
-//       if (importedDate != null && existingDate != null) {
-//         if (importedDate.isAfter(existingDate)) {
-//           existingSession.spotName = importedSession.spotName;
-//           existingSession.startDate = importedSession.startDate;
-//           existingSession.endDate = importedSession.endDate;
-//           sessionUpdated = true;
-//         }
-//       }
-//       break;
-//
-//     case MergeStrategy.keepExisting:
-//       break;
-//
-//     case MergeStrategy.overwrite:
-//       existingSession.spotName = importedSession.spotName;
-//       existingSession.startDate = importedSession.startDate;
-//       existingSession.endDate = importedSession.endDate;
-//       sessionUpdated = true;
-//       break;
-//   }
-//
-//   final mergedFishermen = _mergeFishermen(
-//     existingSession.fishermen,
-//     importedSession.fishermen,
-//   );
-//
-//   if (mergedFishermen.length != existingSession.fishermen.length ||
-//       !_areFishermenEqual(existingSession.fishermen, mergedFishermen)) {
-//     existingSession.fishermen = mergedFishermen;
-//     sessionUpdated = true;
-//   }
-//
-//   if (sessionUpdated) {
-//     await isar.sessions.put(existingSession);
-//   }
-//
-//   await _mergeCatches(
-//     isar,
-//     existingSession,
-//     sessionJson['catches'] as List<dynamic>,
-//     strategy,
-//   );
-// }
-
-Future<void> _mergeSession(
+/// Écrase une session existante et toutes ses prises associées
+/// avec les données d'une session importée.
+///
+/// J'ai abusé sur la doc car j'en ai marre de la logique de DB, c'est long, chiant, et ca me fait perdre mes cheveux à 20 ans
+Future<void> _overwriteSession(
   Isar isar,
   Session existingSession,
   Session importedSession,
   Map<String, dynamic> sessionJson,
-  MergeStrategy strategy,
 ) async {
-  bool sessionUpdated = false;
+  // 1. Écraser les propriétés de la session existante
+  existingSession.spotName = importedSession.spotName;
+  existingSession.startDate = importedSession.startDate;
+  existingSession.endDate = importedSession.endDate;
+  // On garde la date de modification importée pour la cohérence
+  existingSession.lastModified = importedSession.lastModified;
+  existingSession.fishermen = importedSession.fishermen; // Remplace la liste
 
-  switch (strategy) {
-    case MergeStrategy.keepNewer:
-      // Utiliser lastModified pour déterminer quelle version est plus récente
-      final existingModified = existingSession.lastModified;
-      final importedModified = importedSession.lastModified;
+  await isar.sessions.put(existingSession);
 
-      if (importedModified != null && existingModified != null) {
-        if (importedModified.isAfter(existingModified)) {
-          // Les données importées sont plus récentes
-          existingSession.spotName = importedSession.spotName;
-          existingSession.startDate = importedSession.startDate;
-          existingSession.endDate = importedSession.endDate;
-          existingSession.lastModified = importedSession.lastModified;
-          sessionUpdated = true;
-        }
-      } else if (importedModified != null) {
-        // Seulement l'importée a une date
-        existingSession.spotName = importedSession.spotName;
-        existingSession.startDate = importedSession.startDate;
-        existingSession.endDate = importedSession.endDate;
-        existingSession.lastModified = importedSession.lastModified;
-        sessionUpdated = true;
-      }
-      break;
-
-    case MergeStrategy.keepExisting:
-      // Ne rien faire
-      break;
-
-    case MergeStrategy.overwrite:
-      existingSession.spotName = importedSession.spotName;
-      existingSession.startDate = importedSession.startDate;
-      existingSession.endDate = importedSession.endDate;
-      existingSession.lastModified = DateTime.now();
-      sessionUpdated = true;
-      break;
-  }
-
-  // Le reste du code de merge...
-  final mergedFishermen = _mergeFishermen(
-    existingSession.fishermen,
-    importedSession.fishermen,
-  );
-
-  if (mergedFishermen.length != existingSession.fishermen.length ||
-      !_areFishermenEqual(existingSession.fishermen, mergedFishermen)) {
-    existingSession.fishermen = mergedFishermen;
-    existingSession.lastModified = DateTime.now();
-    sessionUpdated = true;
-  }
-
-  if (sessionUpdated) {
-    await isar.sessions.put(existingSession);
-  }
-
-  await _mergeCatches(
-    isar,
-    existingSession,
-    sessionJson['catches'] as List<dynamic>,
-    strategy,
-  );
-}
-
-List<Fisherman> _mergeFishermen(
-  List<Fisherman> existing,
-  List<Fisherman> imported,
-) {
-  final mergedMap = <String, Fisherman>{};
-
-  // Ajouter tous les fishermen existants
-  for (final fisherman in existing) {
-    if (fisherman.name != null) {
-      mergedMap[fisherman.name!.toLowerCase()] = fisherman;
-    }
-  }
-
-  // Merger avec les fishermen importés
-  for (final fisherman in imported) {
-    if (fisherman.name != null) {
-      final key = fisherman.name!.toLowerCase();
-
-      if (mergedMap.containsKey(key)) {
-        // Fisherman existe déjà, mettre à jour si nécessaire
-        final existing = mergedMap[key]!;
-
-        // Garder le spot number s'il n'existait pas
-        if (existing.spotNumber == null && fisherman.spotNumber != null) {
-          existing.spotNumber = fisherman.spotNumber;
-        }
-
-        // Garder la couleur si elle n'existait pas
-        if (existing.colorSeed == null && fisherman.colorSeed != null) {
-          existing.colorSeed = fisherman.colorSeed;
-        }
-      } else {
-        // Nouveau fisherman
-        mergedMap[key] = fisherman;
-      }
-    }
-  }
-
-  return mergedMap.values.toList();
-}
-
-bool _areFishermenEqual(List<Fisherman> a, List<Fisherman> b) {
-  if (a.length != b.length) return false;
-
-  final aNames = a.map((f) => f.name?.toLowerCase()).toSet();
-  final bNames = b.map((f) => f.name?.toLowerCase()).toSet();
-
-  return aNames.difference(bNames).isEmpty;
-}
-
-Future<void> _mergeCatches(
-  Isar isar,
-  Session existingSession,
-  List<dynamic> importedCatchesJson,
-  MergeStrategy strategy,
-) async {
+  // 2. Supprimer TOUTES les anciennes prises (catches) liées à cette session
   final existingCatches = await isar.catchs
       .filter()
       .session((q) => q.idEqualTo(existingSession.id))
       .findAll();
 
-  final existingCatchesMap = <String, Catch>{};
-  for (final catch_ in existingCatches) {
-    existingCatchesMap[catch_.uuid] = catch_;
-  }
+  await isar.catchs.deleteAll(existingCatches.map((c) => c.id).toList());
 
+  final importedCatchesJson = sessionJson['catches'] as List<dynamic>;
   for (final catchJson in importedCatchesJson) {
-    final importedCatch = Catch.fromJson(catchJson);
-
-    if (existingCatchesMap.containsKey(importedCatch.uuid)) {
-      final existingCatch = existingCatchesMap[importedCatch.uuid]!;
-
-      switch (strategy) {
-        case MergeStrategy.keepNewer:
-          final existingModified = existingCatch.lastModified;
-          final importedModified = importedCatch.lastModified;
-          bool needsUpdate = false;
-
-          if (importedModified != null && existingModified != null) {
-            if (importedModified.isAfter(existingModified)) {
-              needsUpdate = true;
-            }
-          } else if (importedModified != null) {
-            needsUpdate = true;
-          }
-
-          if (needsUpdate) {
-            existingCatch.fishType = importedCatch.fishType;
-            existingCatch.accident = importedCatch.accident;
-            existingCatch.otherFishType = importedCatch.otherFishType;
-            existingCatch.weight = importedCatch.weight;
-            existingCatch.annotations = importedCatch.annotations;
-            existingCatch.fishermenName = importedCatch.fishermenName;
-            existingCatch.catchDate = importedCatch.catchDate;
-            existingCatch.lastModified = importedCatch.lastModified;
-            await isar.catchs.put(existingCatch);
-          }
-          break;
-        case MergeStrategy.keepExisting:
-          break;
-
-        case MergeStrategy.overwrite:
-          existingCatch.fishType = importedCatch.fishType;
-          existingCatch.accident = importedCatch.accident;
-          existingCatch.otherFishType = importedCatch.otherFishType;
-          existingCatch.weight = importedCatch.weight;
-          existingCatch.annotations = importedCatch.annotations;
-          existingCatch.fishermenName = importedCatch.fishermenName;
-          existingCatch.catchDate = importedCatch.catchDate;
-          await isar.catchs.put(existingCatch);
-          break;
-      }
-    } else {
-      importedCatch.id = Isar.autoIncrement;
-      importedCatch.session.value = existingSession;
-      await isar.catchs.put(importedCatch);
-      await importedCatch.session.save();
-    }
+    final newCatch = Catch.fromJson(catchJson);
+    newCatch.id = Isar.autoIncrement;
+    newCatch.session.value = existingSession;
+    await isar.catchs.put(newCatch);
+    await newCatch.session.save();
   }
 }
-
-enum MergeStrategy { keepNewer, keepExisting, overwrite }
