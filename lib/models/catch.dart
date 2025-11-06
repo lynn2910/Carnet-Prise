@@ -24,11 +24,13 @@ class Catch {
   String? fishermenName;
   DateTime? catchDate;
   String? annotations;
+  DateTime? lastModified;
 
   final session = IsarLink<Session>();
 
   Catch() {
     uuid = const Uuid().v4();
+    lastModified = DateTime.now();
   }
 
   String shareSingle(String? spotNumber) {
@@ -91,6 +93,7 @@ class Catch {
       'fishermenName': fishermenName,
       'catchDate': catchDate?.toIso8601String(),
       'annotations': annotations,
+      'lastModified': lastModified?.toIso8601String(),
     };
   }
 
@@ -110,6 +113,9 @@ class Catch {
       ..fishermenName = json['fishermenName'] as String?
       ..catchDate = json['catchDate'] != null
           ? DateTime.parse(json['catchDate'])
+          : null
+      ..lastModified = json['lastModified'] != null
+          ? DateTime.parse(json['lastModified'])
           : null;
   }
 }

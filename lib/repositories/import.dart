@@ -7,6 +7,7 @@ import 'package:isar/isar.dart';
 
 import '../models/catch.dart';
 import '../models/fisherman.dart';
+import 'clean.dart';
 import 'isar_service.dart';
 
 Future<void> importData({
@@ -273,40 +274,30 @@ Future<void> _mergeCatches(
 
       switch (strategy) {
         case MergeStrategy.keepNewer:
+          final existingModified = existingCatch.lastModified;
+          final importedModified = importedCatch.lastModified;
           bool needsUpdate = false;
 
-          if (importedCatch.annotations != null &&
-              (existingCatch.annotations == null ||
-                  importedCatch.annotations!.length >
-                      existingCatch.annotations!.length)) {
-            existingCatch.annotations = importedCatch.annotations;
-            needsUpdate = true;
-          }
-
-          if (importedCatch.weight != null &&
-              (existingCatch.weight == null ||
-                  importedCatch.weight != existingCatch.weight)) {
-            existingCatch.weight = importedCatch.weight;
-            needsUpdate = true;
-          }
-
-          if (importedCatch.fishType != null &&
-              existingCatch.fishType == null) {
-            existingCatch.fishType = importedCatch.fishType;
-            needsUpdate = true;
-          }
-
-          if (importedCatch.otherFishType != null &&
-              existingCatch.otherFishType == null) {
-            existingCatch.otherFishType = importedCatch.otherFishType;
+          if (importedModified != null && existingModified != null) {
+            if (importedModified.isAfter(existingModified)) {
+              needsUpdate = true;
+            }
+          } else if (importedModified != null) {
             needsUpdate = true;
           }
 
           if (needsUpdate) {
+            existingCatch.fishType = importedCatch.fishType;
+            existingCatch.accident = importedCatch.accident;
+            existingCatch.otherFishType = importedCatch.otherFishType;
+            existingCatch.weight = importedCatch.weight;
+            existingCatch.annotations = importedCatch.annotations;
+            existingCatch.fishermenName = importedCatch.fishermenName;
+            existingCatch.catchDate = importedCatch.catchDate;
+            existingCatch.lastModified = importedCatch.lastModified;
             await isar.catchs.put(existingCatch);
           }
           break;
-
         case MergeStrategy.keepExisting:
           break;
 

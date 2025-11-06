@@ -73,71 +73,54 @@ Future<void> exportData(
   await SharePlus.instance.share(ShareParams(files: [XFile(filePath)]));
 }
 
-Future<void> importData({required bool replaceExisting}) async {
-  final isarService = IsarService();
-  final isar = await isarService.db;
-
-  FilePickerResult? result = await FilePicker.platform.pickFiles(
-    type: FileType.custom,
-    allowedExtensions: ['json'],
-  );
-
-  if (result == null) {
-    return;
-  }
-
-  final filePath = result.files.single.path!;
-  final file = File(filePath);
-  final jsonString = await file.readAsString();
-
-  final List<dynamic> jsonData = jsonDecode(jsonString);
-
-  if (replaceExisting) {
-    await cleanDatabase(isarService);
-  }
-
-  await isar.writeTxn(() async {
-    for (final sessionJson in jsonData) {
-      final session = Session.fromJson(sessionJson);
-
-      final existingSession = await isar.sessions
-          .filter()
-          .uuidEqualTo(session.uuid)
-          .findFirst();
-
-      if (existingSession != null && !replaceExisting) {
-        print('Session ${session.uuid} existe déjà, ignorée');
-        continue;
-      }
-
-      session.id = Isar.autoIncrement;
-      await isar.sessions.put(session);
-
-      final catchesJson = sessionJson['catches'] as List<dynamic>;
-      for (final catchJson in catchesJson) {
-        final newCatch = Catch.fromJson(catchJson);
-        newCatch.id = Isar.autoIncrement;
-        newCatch.session.value = session;
-        await isar.catchs.put(newCatch);
-        await newCatch.session.save();
-      }
-    }
-  });
-}
-
-Future<void> cleanDatabase(
-  IsarService isarService, {
-  bool? resetPreferences = false,
-}) async {
-  final isar = await isarService.db;
-
-  await isar.writeTxn(() async {
-    await isar.catchs.clear();
-    await isar.sessions.clear();
-  });
-
-  if (resetPreferences ?? false) {
-    final instance = await SharedPreferences.getInstance();
-    instance.clear();
-  }
-}
+// Future<void> importData({required bool replaceExisting}) async {
+//   final isarService = IsarService();
+//   final isar = await isarService.db;
+//
+//   FilePickerResult? result = await FilePicker.platform.pickFiles(
+//     type: FileType.custom,
+//     allowedExtensions: ['json'],
+//   );
+//
+//   if (result == null) {
+//     return;
+//   }
+//
+//   final filePath = result.files.single.path!;
+//   final file = File(filePath);
+//   final jsonString = await file.readAsString();
+//
+//   final List<dynamic> jsonData = jsonDecode(jsonString);
+//
+//   if (replaceExisting) {
+//     await cleanDatabase(isarService);
+//   }
+//
+//   await isar.writeTxn(() async {
+//     for (final sessionJson in jsonData) {
+//       final session = Session.fromJson(sessionJson);
+//
+//       final existingSession = await isar.sessions
+//           .filter()
+//           .uuidEqualTo(session.uuid)
+//           .findFirst();
+//
+//       if (existingSession != null && !replaceExisting) {
+//         print('Session ${session.uuid} existe déjà, ignorée');
+//         continue;
+//       }
+//
+//       session.id = Isar.autoIncrement;
+//       await isar.sessions.put(session);
+//
+//       final catchesJson = sessionJson['catches'] as List<dynamic>;
+//       for (final catchJson in catchesJson) {
+//         final newCatch = Catch.fromJson(catchJson);
+//         newCatch.id = Isar.autoIncrement;
+//         newCatch.session.value = session;
+//         await isar.catchs.put(newCatch);
+//         await newCatch.session.save();
+//       }
+//     }
+//   });
+// }
