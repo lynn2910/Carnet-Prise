@@ -98,21 +98,16 @@ Future<void> importData({required bool replaceExisting}) async {
   await isar.writeTxn(() async {
     for (final sessionJson in jsonData) {
       final session = Session.fromJson(sessionJson);
-
       session.id = Isar.autoIncrement;
       await isar.sessions.put(session);
-
-      final newSession = await isar.sessions.get(session.id);
 
       final catchesJson = sessionJson['catches'] as List<dynamic>;
       for (final catchJson in catchesJson) {
         final newCatch = Catch.fromJson(catchJson);
-
         newCatch.id = Isar.autoIncrement;
-
-        newCatch.session.value = newSession;
-
+        newCatch.session.value = session;
         await isar.catchs.put(newCatch);
+        await newCatch.session.save();
       }
     }
   });
