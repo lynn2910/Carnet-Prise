@@ -12,13 +12,17 @@ Future<void> migrateSessionsToUUID(IsarService isarService) async {
     final sessions = await isar.sessions.where().findAll();
 
     for (final session in sessions) {
+      bool needsUpdate = false;
       try {
         final currentUuid = session.uuid;
-        if (currentUuid.isEmpty || !_isValidUuid(currentUuid)) {
-          session.uuid = const Uuid().v4();
-          await isar.sessions.put(session);
+        if (!_isValidUuid(currentUuid)) {
+          needsUpdate = true;
         }
       } catch (e) {
+        needsUpdate = true;
+      }
+
+      if (needsUpdate) {
         session.uuid = const Uuid().v4();
         await isar.sessions.put(session);
       }
@@ -41,13 +45,17 @@ Future<void> migrateCatchesToUUID(IsarService isarService) async {
     final catches = await isar.catchs.where().findAll();
 
     for (final catch_ in catches) {
+      bool needsUpdate = false;
       try {
         final currentUuid = catch_.uuid;
-        if (currentUuid.isEmpty || !_isValidUuid(currentUuid)) {
-          catch_.uuid = const Uuid().v4();
-          await isar.catchs.put(catch_);
+        if (!_isValidUuid(currentUuid)) {
+          needsUpdate = true;
         }
       } catch (e) {
+        needsUpdate = true;
+      }
+
+      if (needsUpdate) {
         catch_.uuid = const Uuid().v4();
         await isar.catchs.put(catch_);
       }
