@@ -28,7 +28,7 @@ Suivez ces étapes pour installer l'application sur votre téléphone Android.
 
 2. Autoriser les sources inconnues
 
-    - Android protège votre sécurité en bloquant par défaut les applications qui ne proviennent pas du Google Play Store. Vous devrez autoriser temporairement l'installation.
+    - Android protège votre appareil en bloquant par défaut les applications qui ne proviennent pas du Google Play Store. Vous devrez autoriser temporairement l'installation.
 
     - Lorsque vous ouvrez le fichier `.apk`, votre téléphone vous demandera l'autorisation d'installer des applications de "sources inconnues". Suivez les instructions pour l'accorder.
 
