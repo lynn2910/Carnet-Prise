@@ -9,6 +9,7 @@ import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:uuid/uuid.dart';
 
 class IsarService {
   late Future<Isar> db;
@@ -98,6 +99,17 @@ Future<void> importData({required bool replaceExisting}) async {
   await isar.writeTxn(() async {
     for (final sessionJson in jsonData) {
       final session = Session.fromJson(sessionJson);
+
+      final existingSession = await isar.sessions
+          .filter()
+          .uuidEqualTo(session.uuid)
+          .findFirst();
+
+      if (existingSession != null && !replaceExisting) {
+        print('Session ${session.uuid} existe déjà, ignorée');
+        continue;
+      }
+
       session.id = Isar.autoIncrement;
       await isar.sessions.put(session);
 
@@ -108,6 +120,22 @@ Future<void> importData({required bool replaceExisting}) async {
         newCatch.session.value = session;
         await isar.catchs.put(newCatch);
         await newCatch.session.save();
+      }
+    }
+  });
+}
+
+Future<void> migrateSessionsToUUID(IsarService isarService) async {
+  final isar = await isarService.db;
+
+  await isar.writeTxn(() async {
+    final sessions = await isar.sessions.where().findAll();
+
+    for (final session in sessions) {
+      // Si la session n'as pas une UUID
+      if (session.uuid.isEmpty) {
+        session.uuid = const Uuid().v4();
+        await isar.sessions.put(session);
       }
     }
   });
