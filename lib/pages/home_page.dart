@@ -6,6 +6,8 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../repositories/isar_service.dart';
+
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -18,6 +20,10 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _sessionsLoaded = false;
   List<Session> _sessions = [];
   String _username = "";
+
+  // Mode sélection
+  bool _isSelectionMode = false;
+  final Set<int> _selectedSessionIds = {};
 
   @override
   void initState() {
@@ -72,7 +78,106 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _onItemClick(Session session) {
-    context.push('/session/${session.id}');
+    if (_isSelectionMode) {
+      _toggleSelection(session.id);
+    } else {
+      context.push('/session/${session.id}');
+    }
+  }
+
+  void _onItemLongPress(Session session) {
+    setState(() {
+      _isSelectionMode = true;
+      _selectedSessionIds.add(session.id);
+    });
+  }
+
+  void _toggleSelection(int sessionId) {
+    setState(() {
+      if (_selectedSessionIds.contains(sessionId)) {
+        _selectedSessionIds.remove(sessionId);
+        if (_selectedSessionIds.isEmpty) {
+          _isSelectionMode = false;
+        }
+      } else {
+        _selectedSessionIds.add(sessionId);
+      }
+    });
+  }
+
+  void _cancelSelection() {
+    setState(() {
+      _isSelectionMode = false;
+      _selectedSessionIds.clear();
+    });
+  }
+
+  void _shareSelectedSessions() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) {
+        _performExport().then((result) {
+          if (!mounted) return;
+          // Pop the dialog using its own context
+          Navigator.of(dialogContext).pop();
+          _handleExportResult(result.success, result.message);
+        });
+
+        return const Center(child: CircularProgressIndicator());
+      },
+    );
+  }
+
+  Future<_ExportResult> _performExport() async {
+    String? message;
+    bool success = false;
+    try {
+      final isarService = Provider.of<IsarService>(context, listen: false);
+      final sessionRepository =
+          Provider.of<SessionRepository>(context, listen: false);
+
+      success = await exportDataWithFeedback(
+        isarService,
+        sessionRepository,
+        selectedSessionIds: _selectedSessionIds,
+        onError: (reason) {
+          message = reason;
+        },
+        onSuccess: (msg) {
+          message = msg;
+        },
+      );
+    } catch (e) {
+      message = 'Erreur inattendue : $e';
+      success = false;
+    }
+    return _ExportResult(success, message);
+  }
+
+  void _handleExportResult(bool success, String? message) {
+    if (!mounted) return;
+
+    if (message != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(message),
+          backgroundColor: success ? Colors.green : Colors.red,
+          duration: Duration(seconds: success ? 3 : 4),
+          action: success
+              ? null
+              : SnackBarAction(
+                  label: 'OK',
+                  textColor: Colors.white,
+                  onPressed: () {},
+                ),
+        ),
+      );
+    }
+
+    if (success) {
+      _cancelSelection();
+    }
   }
 
   @override
@@ -80,6 +185,21 @@ class _HomeScreenState extends State<HomeScreen> {
     var theme = Theme.of(context);
 
     return Scaffold(
+      appBar: _isSelectionMode
+          ? AppBar(
+              leading: IconButton(
+                icon: const Icon(Icons.close),
+                onPressed: _cancelSelection,
+              ),
+              title: Text("${_selectedSessionIds.length} sélectionnée(s)"),
+              actions: [
+                IconButton(
+                  icon: const Icon(Icons.download),
+                  onPressed: _shareSelectedSessions,
+                ),
+              ],
+            )
+          : null,
       body: RefreshIndicator(
         onRefresh: _loadSessions,
         child: SingleChildScrollView(
@@ -89,32 +209,33 @@ class _HomeScreenState extends State<HomeScreen> {
               minHeight:
                   MediaQuery.of(context).size.height -
                   MediaQuery.of(context).padding.top -
-                  kToolbarHeight,
+                  (_isSelectionMode ? kToolbarHeight : 0),
             ),
             child: SafeArea(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Title
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 50),
-                    child: Center(
-                      child: Text(
-                        _username.isNotEmpty
-                            ? "Bonjour, $_username !"
-                            : "Bonjour !",
-                        style: const TextStyle(
-                          fontSize: 34,
-                          fontWeight: FontWeight.bold,
+                  if (!_isSelectionMode)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 50),
+                      child: Center(
+                        child: Text(
+                          _username.isNotEmpty
+                              ? "Bonjour, $_username !"
+                              : "Bonjour !",
+                          style: const TextStyle(
+                            fontSize: 34,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          textAlign: TextAlign.center,
                         ),
-                        textAlign: TextAlign.center,
                       ),
                     ),
-                  ),
                   if (!_sessionsLoaded)
-                    Center(child: LinearProgressIndicator()),
+                    const Center(child: LinearProgressIndicator()),
                   // Number of sessions indicator
-                  if (_sessionsLoaded)
+                  if (_sessionsLoaded && !_isSelectionMode)
                     Padding(
                       padding: const EdgeInsets.only(left: 20.0, bottom: 20.0),
                       child: Text(
@@ -127,7 +248,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     _sessions.isEmpty
                         ? Center(
                             child: Padding(
-                              padding: EdgeInsets.symmetric(vertical: 50.0),
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 50.0,
+                              ),
                               child: Text(
                                 "Aucune session enregistrée.\nAppuyez sur '+' pour en créer une.",
                                 textAlign: TextAlign.center,
@@ -141,6 +264,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         : SessionList(
                             sessions: _sessions,
                             onItemClick: _onItemClick,
+                            onItemLongPress: _onItemLongPress,
+                            isSelectionMode: _isSelectionMode,
+                            selectedSessionIds: _selectedSessionIds,
                           ),
                 ],
               ),
@@ -148,14 +274,22 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          await context.pushNamed("create_session");
-          if (!mounted) return;
-          _loadSessions();
-        },
-        child: const Icon(Icons.add),
-      ),
+      floatingActionButton: _isSelectionMode
+          ? null
+          : FloatingActionButton(
+              onPressed: () async {
+                await context.pushNamed("create_session");
+                if (!mounted) return;
+                _loadSessions();
+              },
+              child: const Icon(Icons.add),
+            ),
     );
   }
+}
+
+class _ExportResult {
+  final bool success;
+  final String? message;
+  _ExportResult(this.success, this.message);
 }

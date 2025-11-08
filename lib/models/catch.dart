@@ -1,6 +1,7 @@
 import 'package:carnet_prise/models/session.dart';
 import 'package:intl/intl.dart';
 import 'package:isar/isar.dart';
+import 'package:uuid/uuid.dart';
 
 import '../widgets/catches/catch_item.dart';
 
@@ -9,6 +10,9 @@ part "catch.g.dart";
 @collection
 class Catch {
   Id id = Isar.autoIncrement;
+
+  @Index(unique: true, replace: false)
+  late String uuid;
 
   @Enumerated(EnumType.name)
   FishType? fishType;
@@ -20,8 +24,14 @@ class Catch {
   String? fishermenName;
   DateTime? catchDate;
   String? annotations;
+  DateTime? lastModified;
 
   final session = IsarLink<Session>();
+
+  Catch() {
+    uuid = const Uuid().v4();
+    lastModified = DateTime.now();
+  }
 
   String shareSingle(String? spotNumber) {
     String text;
@@ -72,11 +82,10 @@ class Catch {
     return text;
   }
 
-  Catch();
-
   Map<String, dynamic> toJson() {
     return {
       'id': id,
+      'uuid': uuid,
       'fishType': fishType?.name,
       'accident': accident?.name,
       'otherFishType': otherFishType,
@@ -84,12 +93,14 @@ class Catch {
       'fishermenName': fishermenName,
       'catchDate': catchDate?.toIso8601String(),
       'annotations': annotations,
+      'lastModified': lastModified?.toIso8601String(),
     };
   }
 
   factory Catch.fromJson(Map<String, dynamic> json) {
     return Catch()
       ..id = json['id'] as int
+      ..uuid = json['uuid'] as String? ?? const Uuid().v4()
       ..fishType = json['fishType'] != null
           ? FishType.values.byName(json['fishType'])
           : null
@@ -102,6 +113,9 @@ class Catch {
       ..fishermenName = json['fishermenName'] as String?
       ..catchDate = json['catchDate'] != null
           ? DateTime.parse(json['catchDate'])
+          : null
+      ..lastModified = json['lastModified'] != null
+          ? DateTime.parse(json['lastModified'])
           : null;
   }
 }

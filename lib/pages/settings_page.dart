@@ -10,6 +10,8 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:restart_app/restart_app.dart';
 
+import '../repositories/clean.dart';
+import '../repositories/import.dart';
 import '../widgets/settings/theme_color_selector.dart';
 
 class SettingsScreen extends StatefulWidget {

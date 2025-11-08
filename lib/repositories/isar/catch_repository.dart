@@ -60,6 +60,8 @@ class CatchRepository {
         return false;
       }
 
+      updatedCatch.lastModified = DateTime.now();
+
       await updatedCatch.session.save();
 
       return await isar.catchs.put(updatedCatch) != 0;

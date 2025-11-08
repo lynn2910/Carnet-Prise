@@ -47,6 +47,7 @@ class _AddCatchScreenState extends State<AddCatchScreen> {
 
     _catchRepository = Provider.of<CatchRepository>(context, listen: false);
     _sessionRepository = Provider.of<SessionRepository>(context, listen: false);
+    _fishTypeController.text = "Carpe";
 
     _loadAssociatedData().whenComplete(() {
       _loadAllFishermen();
@@ -380,13 +381,21 @@ class _AddCatchScreenState extends State<AddCatchScreen> {
                                 fieldTextEditingController.text =
                                     _fishTypeController.text;
                               }
+
                               return TextFormField(
                                 controller: fieldTextEditingController,
                                 focusNode: fieldFocusNode,
                                 enabled: _selectedAccident == Accident.none,
-                                decoration: const InputDecoration(
+                                decoration: InputDecoration(
                                   labelText: 'Type de poisson',
-                                  border: OutlineInputBorder(),
+                                  border: const OutlineInputBorder(),
+                                  suffixIcon: IconButton(
+                                    icon: const Icon(Icons.close),
+                                    onPressed: () {
+                                      _fishTypeController.clear();
+                                      fieldTextEditingController.clear();
+                                    },
+                                  ),
                                 ),
                                 validator: (value) {
                                   if (_selectedAccident == Accident.none &&
