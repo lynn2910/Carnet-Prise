@@ -1,11 +1,9 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:carnet_prise/models/catch.dart';
 import 'package:carnet_prise/models/session.dart';
 import 'package:carnet_prise/repositories/isar/session_repository.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter/foundation.dart';
 import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -159,6 +157,7 @@ Future<bool> exportDataWithFeedback(
     );
 
     if (outputPath == null) {
+      // L'utilisateur a annulé la sélection de fichier
       return false;
     }
 

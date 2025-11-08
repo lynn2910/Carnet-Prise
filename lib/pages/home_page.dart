@@ -112,74 +112,71 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  void _shareSelectedSessions() async {
+  void _shareSelectedSessions() {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => const Center(child: CircularProgressIndicator()),
-    );
+      builder: (dialogContext) {
+        _performExport().then((result) {
+          if (!mounted) return;
+          // Pop the dialog using its own context
+          Navigator.of(dialogContext).pop();
+          _handleExportResult(result.success, result.message);
+        });
 
+        return const Center(child: CircularProgressIndicator());
+      },
+    );
+  }
+
+  Future<_ExportResult> _performExport() async {
+    String? message;
+    bool success = false;
     try {
       final isarService = Provider.of<IsarService>(context, listen: false);
-      final sessionRepository = Provider.of<SessionRepository>(
-        context,
-        listen: false,
-      );
+      final sessionRepository =
+          Provider.of<SessionRepository>(context, listen: false);
 
-      final success = await exportDataWithFeedback(
+      success = await exportDataWithFeedback(
         isarService,
         sessionRepository,
         selectedSessionIds: _selectedSessionIds,
         onError: (reason) {
-          if (mounted) Navigator.of(context).pop();
+          message = reason;
+        },
+        onSuccess: (msg) {
+          message = msg;
+        },
+      );
+    } catch (e) {
+      message = 'Erreur inattendue : $e';
+      success = false;
+    }
+    return _ExportResult(success, message);
+  }
 
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(reason),
-                backgroundColor: Colors.red,
-                duration: const Duration(seconds: 4),
-                action: SnackBarAction(
+  void _handleExportResult(bool success, String? message) {
+    if (!mounted) return;
+
+    if (message != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(message),
+          backgroundColor: success ? Colors.green : Colors.red,
+          duration: Duration(seconds: success ? 3 : 4),
+          action: success
+              ? null
+              : SnackBarAction(
                   label: 'OK',
                   textColor: Colors.white,
                   onPressed: () {},
                 ),
-              ),
-            );
-          }
-        },
-        onSuccess: (message) {
-          if (mounted) Navigator.of(context).pop();
-
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(message),
-                backgroundColor: Colors.green,
-                duration: const Duration(seconds: 3),
-              ),
-            );
-
-            _cancelSelection();
-          }
-        },
+        ),
       );
+    }
 
-      if (!success && mounted) {
-        context.pop();
-      }
-    } catch (e) {
-      if (mounted) context.pop();
-
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Erreur inattendue : $e'),
-            backgroundColor: Colors.red,
-            duration: const Duration(seconds: 5),
-          ),
-        );
-      }
+    if (success) {
+      _cancelSelection();
     }
   }
 
@@ -289,4 +286,10 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
     );
   }
+}
+
+class _ExportResult {
+  final bool success;
+  final String? message;
+  _ExportResult(this.success, this.message);
 }
