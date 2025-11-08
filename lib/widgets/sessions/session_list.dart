@@ -5,11 +5,17 @@ import 'package:intl/intl.dart';
 class SessionList extends StatefulWidget {
   final List<Session> sessions;
   final Function(Session session) onItemClick;
+  final Function(Session session)? onItemLongPress;
+  final bool isSelectionMode;
+  final Set<int> selectedSessionIds;
 
   const SessionList({
     super.key,
     required this.sessions,
     required this.onItemClick,
+    this.onItemLongPress,
+    this.isSelectionMode = false,
+    this.selectedSessionIds = const {},
   });
 
   @override
@@ -41,6 +47,7 @@ class _SessionListState extends State<SessionList> {
       itemCount: widget.sessions.length,
       itemBuilder: (context, index) {
         final session = widget.sessions[index];
+        final isSelected = widget.selectedSessionIds.contains(session.id);
 
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
@@ -49,21 +56,29 @@ class _SessionListState extends State<SessionList> {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12.0),
             ),
-            color: theme.colorScheme.surfaceContainer,
+            color: isSelected
+                ? theme.colorScheme.primaryContainer
+                : theme.colorScheme.surfaceContainer,
             child: InkWell(
               borderRadius: BorderRadius.circular(12.0),
               onTap: () {
                 widget.onItemClick(session);
               },
+              onLongPress: widget.onItemLongPress != null
+                  ? () => widget.onItemLongPress!(session)
+                  : null,
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Row(
                   children: [
+                    // Icône de sélection ou numéro de session
                     Container(
                       width: 50,
                       height: 50,
                       decoration: BoxDecoration(
-                        color: theme.colorScheme.primary.withValues(alpha: 0.3),
+                        color: isSelected
+                            ? theme.colorScheme.primary
+                            : theme.colorScheme.primary.withValues(alpha: 0.3),
                         shape: BoxShape.circle,
                         border: Border.all(
                           color: Colors.white.withValues(alpha: 0.3),
@@ -71,13 +86,22 @@ class _SessionListState extends State<SessionList> {
                         ),
                       ),
                       child: Center(
-                        child: Text(
-                          session.id.toString(),
-                          style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+                        child: widget.isSelectionMode && isSelected
+                            ? Icon(
+                                Icons.check,
+                                color: theme.colorScheme.onPrimary,
+                                size: 24,
+                              )
+                            : Text(
+                                session.id.toString(),
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: isSelected
+                                      ? theme.colorScheme.onPrimary
+                                      : null,
+                                ),
+                              ),
                       ),
                     ),
                     const SizedBox(width: 16.0),
@@ -89,21 +113,27 @@ class _SessionListState extends State<SessionList> {
                         children: [
                           Text(
                             _formatDate(session).capitalize(),
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
+                              color: isSelected
+                                  ? theme.colorScheme.onPrimaryContainer
+                                  : null,
                             ),
                           ),
                           const SizedBox(height: 4),
                           Text(
                             session.spotName ?? "Lieu inconnu",
-                            style: TextStyle(fontSize: 14),
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: isSelected
+                                  ? theme.colorScheme.onPrimaryContainer
+                                  : null,
+                            ),
                           ),
                         ],
                       ),
                     ),
-                    // Vous pouvez ajouter une icône ou une flèche ici si vous voulez
-                    // const Icon(Icons.arrow_forward_ios, color: Colors.white54, size: 16),
                   ],
                 ),
               ),

@@ -381,6 +381,7 @@ class _AddCatchScreenState extends State<AddCatchScreen> {
                                 fieldTextEditingController.text =
                                     _fishTypeController.text;
                               }
+
                               return TextFormField(
                                 controller: fieldTextEditingController,
                                 focusNode: fieldFocusNode,

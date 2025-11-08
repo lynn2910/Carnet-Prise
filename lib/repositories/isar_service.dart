@@ -5,11 +5,9 @@ import 'package:carnet_prise/models/catch.dart';
 import 'package:carnet_prise/models/session.dart';
 import 'package:carnet_prise/repositories/isar/session_repository.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart';
 import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:share_plus/share_plus.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:uuid/uuid.dart';
 
 class IsarService {
   late Future<Isar> db;
@@ -33,94 +31,141 @@ class IsarService {
 
 Future<void> exportData(
   IsarService isarService,
-  SessionRepository sessionRepository,
-) async {
-  final isar = await isarService.db;
+  SessionRepository sessionRepository, {
+  Set<int>? selectedSessionIds,
+}) async {
+  try {
+    final isar = await isarService.db;
 
-  final sessions = await sessionRepository.getAllSessions();
+    List<Session> sessions = await sessionRepository.getAllSessions();
 
-  final allCatches = await isar.catchs.where().findAll();
-  final catchesBySessionId = <int, List<Catch>>{};
-
-  for (final singleCatch in allCatches) {
-    if (singleCatch.session.value != null) {
-      final sessionId = singleCatch.session.value!.id;
-      if (!catchesBySessionId.containsKey(sessionId)) {
-        catchesBySessionId[sessionId] = [];
-      }
-      catchesBySessionId[sessionId]!.add(singleCatch);
+    if (selectedSessionIds != null && selectedSessionIds.isNotEmpty) {
+      sessions = sessions
+          .where((s) => selectedSessionIds.contains(s.id))
+          .toList();
     }
+
+    if (sessions.isEmpty) {
+      throw Exception("Aucune session à exporter");
+    }
+
+    final allCatches = await isar.catchs.where().findAll();
+
+    final catchesBySessionId = <int, List<Catch>>{};
+    for (final singleCatch in allCatches) {
+      final sessionId = singleCatch.session.value?.id;
+      if (sessionId != null) {
+        catchesBySessionId.putIfAbsent(sessionId, () => []).add(singleCatch);
+      }
+    }
+
+    final exportData = sessions.map((session) {
+      final sessionData = session.toJson();
+      final sessionCatches = catchesBySessionId[session.id] ?? [];
+      sessionData['catches'] = sessionCatches.map((c) => c.toJson()).toList();
+      return sessionData;
+    }).toList();
+
+    final timestamp = DateTime.now()
+        .toIso8601String()
+        .replaceAll(':', '-')
+        .split('.')[0];
+
+    final sessionCount = sessions.length;
+    final fileName = 'carnet_prise_${sessionCount}_sessions_$timestamp.json';
+
+    final jsonString = const JsonEncoder.withIndent('  ').convert(exportData);
+
+    final bytes = utf8.encode(jsonString);
+
+    final outputPath = await FilePicker.platform.saveFile(
+      dialogTitle: 'Exporter les sessions',
+      fileName: fileName,
+      type: FileType.custom,
+      allowedExtensions: ['json'],
+      bytes: bytes,
+    );
+
+    if (outputPath == null) {
+      return;
+    }
+
+    print(
+      'Export réussi : ${sessions.length} session(s) exportée(s) vers $outputPath',
+    );
+  } catch (e) {
+    print('Erreur lors de l\'export : $e');
+    rethrow;
   }
-
-  final exportData = [];
-
-  for (final session in sessions) {
-    final sessionData = session.toJson();
-    final sessionCatches = catchesBySessionId[session.id] ?? [];
-    sessionData['catches'] = sessionCatches.map((c) => c.toJson()).toList();
-    exportData.add(sessionData);
-  }
-
-  final jsonString = jsonEncode(exportData);
-
-  final directory = await getApplicationDocumentsDirectory();
-  final filePath =
-      '${directory.path}/carnet_prise${DateTime.now().toIso8601String()}.json';
-  final file = File(filePath);
-
-  await file.writeAsString(jsonString);
-
-  await SharePlus.instance.share(ShareParams(files: [XFile(filePath)]));
 }
 
-// Future<void> importData({required bool replaceExisting}) async {
-//   final isarService = IsarService();
-//   final isar = await isarService.db;
-//
-//   FilePickerResult? result = await FilePicker.platform.pickFiles(
-//     type: FileType.custom,
-//     allowedExtensions: ['json'],
-//   );
-//
-//   if (result == null) {
-//     return;
-//   }
-//
-//   final filePath = result.files.single.path!;
-//   final file = File(filePath);
-//   final jsonString = await file.readAsString();
-//
-//   final List<dynamic> jsonData = jsonDecode(jsonString);
-//
-//   if (replaceExisting) {
-//     await cleanDatabase(isarService);
-//   }
-//
-//   await isar.writeTxn(() async {
-//     for (final sessionJson in jsonData) {
-//       final session = Session.fromJson(sessionJson);
-//
-//       final existingSession = await isar.sessions
-//           .filter()
-//           .uuidEqualTo(session.uuid)
-//           .findFirst();
-//
-//       if (existingSession != null && !replaceExisting) {
-//         print('Session ${session.uuid} existe déjà, ignorée');
-//         continue;
-//       }
-//
-//       session.id = Isar.autoIncrement;
-//       await isar.sessions.put(session);
-//
-//       final catchesJson = sessionJson['catches'] as List<dynamic>;
-//       for (final catchJson in catchesJson) {
-//         final newCatch = Catch.fromJson(catchJson);
-//         newCatch.id = Isar.autoIncrement;
-//         newCatch.session.value = session;
-//         await isar.catchs.put(newCatch);
-//         await newCatch.session.save();
-//       }
-//     }
-//   });
-// }
+Future<bool> exportDataWithFeedback(
+  IsarService isarService,
+  SessionRepository sessionRepository, {
+  Set<int>? selectedSessionIds,
+  Function(String message)? onSuccess,
+  Function(String error)? onError,
+}) async {
+  try {
+    final isar = await isarService.db;
+
+    List<Session> sessions = await sessionRepository.getAllSessions();
+
+    if (selectedSessionIds != null && selectedSessionIds.isNotEmpty) {
+      sessions = sessions
+          .where((s) => selectedSessionIds.contains(s.id))
+          .toList();
+    }
+
+    if (sessions.isEmpty) {
+      onError?.call("Aucune session à exporter");
+      return false;
+    }
+
+    final allCatches = await isar.catchs.where().findAll();
+
+    final catchesBySessionId = <int, List<Catch>>{};
+    for (final singleCatch in allCatches) {
+      final sessionId = singleCatch.session.value?.id;
+      if (sessionId != null) {
+        catchesBySessionId.putIfAbsent(sessionId, () => []).add(singleCatch);
+      }
+    }
+
+    final exportData = sessions.map((session) {
+      final sessionData = session.toJson();
+      final sessionCatches = catchesBySessionId[session.id] ?? [];
+      sessionData['catches'] = sessionCatches.map((c) => c.toJson()).toList();
+      return sessionData;
+    }).toList();
+
+    final timestamp = DateTime.now()
+        .toIso8601String()
+        .replaceAll(':', '-')
+        .split('.')[0];
+
+    final sessionCount = sessions.length;
+    final fileName = 'carnet_prise_${sessionCount}_sessions_$timestamp.json';
+
+    final jsonString = const JsonEncoder.withIndent('  ').convert(exportData);
+    final bytes = utf8.encode(jsonString);
+
+    final outputPath = await FilePicker.platform.saveFile(
+      dialogTitle: 'Exporter les sessions',
+      fileName: fileName,
+      type: FileType.custom,
+      allowedExtensions: ['json'],
+      bytes: bytes,
+    );
+
+    if (outputPath == null) {
+      return false;
+    }
+
+    onSuccess?.call('${sessions.length} session(s) exportée(s) avec succès');
+    return true;
+  } catch (e) {
+    onError?.call('Erreur lors de l\'export : $e');
+    return false;
+  }
+}
